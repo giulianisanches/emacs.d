@@ -8,6 +8,7 @@
 (setq make-backup-files nil)
 (setq scroll-step 1)
 (setq default-major-mode 'text-mode)
+(setq kill-whole-line t)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 

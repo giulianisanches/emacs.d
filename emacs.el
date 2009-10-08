@@ -15,7 +15,6 @@
 (load "config/theme")
 (load "config/perl")
 (load "config/yasnippet")
-(load "config/autopair")
 (load "config/modes")
 (load "config/erc")
 (load "config/gnus")

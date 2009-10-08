@@ -4,4 +4,4 @@
       cperl-continued-statement-offset 4
       cperl-indent-level 4
       cperl-indent-parens-as-block t
-      cperl-tabs-always-indent t)
+      cperl-tab-always-indent nil)

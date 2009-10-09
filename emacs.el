@@ -11,6 +11,7 @@
 (load "config/global")
 (load "config/defuns")
 (load "config/keymaps")
+(load "config/indentation")
 (load "config/hooks")
 (load "config/theme")
 (load "config/perl")

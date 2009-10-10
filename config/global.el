@@ -1,3 +1,7 @@
+(setq default-frame-alist
+      '((top . 0) (left . 250)
+        (width . 80) (height . 36)))
+
 (setq inhibit-startup-message t)
 (setq make-backup-files nil)
 (setq scroll-step 1)

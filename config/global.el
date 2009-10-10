@@ -19,5 +19,8 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+
 (require 'textmate)
 (tm/initialize)

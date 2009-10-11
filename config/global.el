@@ -7,6 +7,7 @@
 (setq scroll-step 1)
 (setq default-major-mode 'text-mode)
 (setq kill-whole-line t)
+(setq default-truncate-lines t)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 

@@ -1,4 +1,5 @@
 (defalias 'perl-mode 'cperl-mode)
+(require 'perltidy)
 
 (setq cperl-close-paren-offset -4
       cperl-continued-statement-offset 4

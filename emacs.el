@@ -19,6 +19,7 @@
 (load "config/modes")
 (load "config/erc")
 (load "config/gnus")
+(load "config/projects")
 
 (setq custom-file "~/.emacs.d/config/custom.el")
 (load custom-file)

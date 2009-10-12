@@ -4,3 +4,6 @@
 ;; Look at config/defuns.el
 (global-set-key [C-S-right] 'shift-right)
 (global-set-key [C-S-left] 'shift-left)
+
+;; Comment and uncomment
+(global-set-key (kbd "C-;") 'comment-or-uncomment-region)

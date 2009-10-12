@@ -7,3 +7,6 @@
 
 ;; Comment and uncomment
 (global-set-key (kbd "C-;") 'comment-or-uncomment-region)
+
+;; Use ctrl tab to change buffer.
+(global-set-key [C-tab] 'buffer-menu)

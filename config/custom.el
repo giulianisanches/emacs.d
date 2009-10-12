@@ -5,6 +5,7 @@
   ;; If there is more than one, they won't work right.
  '(erc-nick-uniquifier "_")
  '(tm/backspace-delete-column t)
+ '(tm/use-goto-line t)
  '(tm/use-newline-and-indent t))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.

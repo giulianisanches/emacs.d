@@ -45,9 +45,9 @@
 
 (setq skeleton-pair-alist
       '((?\( _ ?\))
-	(?[  _ ?])
-	(?{  _ ?})
-	(?\" _ ?\")
+        (?[  _ ?])
+        (?{  _ ?})
+        (?\" _ ?\")
         (?\' _ ?\')))
 
 (defcustom tm/non-insert-alist '((emacs-lisp-mode . '(?\'))

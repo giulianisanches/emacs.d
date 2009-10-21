@@ -1,0 +1,12 @@
+# name: eclass package Name::Of:Package; use strict; use warnings; use base '';
+# --
+package $1;
+
+use strict;
+use warnings;
+
+use base $4;
+
+$3
+
+1;

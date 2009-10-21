@@ -1,0 +1,10 @@
+# name: class package Name::Of:Package; use strict; use warnings;
+# --
+package $1;
+
+use strict;
+use warnings;
+
+$2
+
+1;

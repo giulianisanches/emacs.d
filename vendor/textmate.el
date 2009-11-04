@@ -45,9 +45,9 @@
 
 (setq skeleton-pair-alist
       '((?\( _ ?\))
-        (?[  _ ?])
-        (?{  _ ?})
-        (?\" _ ?\")
+	(?[  _ ?])
+	(?{  _ ?})
+	(?\" _ ?\")
         (?\' _ ?\')))
 
 (defcustom tm/non-insert-alist '((emacs-lisp-mode . '(?\'))
@@ -150,16 +150,17 @@ chars are not auto-inserted in major-mode"
   (interactive "P")
   (let ((ignore-list (car (last (assoc major-mode tm/non-insert-alist)))))
     (cond
-     ((member last-command-char ignore-list)
-      (insert-char last-command-char 1))
-     ((assq last-command-char skeleton-pair-alist)
+     ((member last-command-event ignore-list)
+      (insert-char last-command-event 1))
+     ((assq last-command-event skeleton-pair-alist)
       (tm/pair-open arg))
      (t
-      (tm/pair-close arg)))))
+      (tm/pair-close arg)))
+    (indent-according-to-mode)))
 
 (defun tm/pair-open (arg)
   (interactive "P")
-  (let ((pair (assq last-command-char
+  (let ((pair (assq last-command-event
 		    skeleton-pair-alist)))
     (cond
      ((and (not mark-active)
@@ -175,15 +176,10 @@ chars are not auto-inserted in major-mode"
    (mark-active
     (let (pair open)
       (dolist (pair skeleton-pair-alist)
-	(when (eq last-command-char (car (last pair)))
+	(when (eq last-command-event (car (last pair)))
 	  (setq open (car pair))))
-      (setq last-command-char open)
+      (setq last-command-event open)
       (skeleton-pair-insert-maybe arg)))
-   ((looking-at
-     (concat "[ \t\n]*"
-	     (regexp-quote (string last-command-char))))
-    (replace-match (string last-command-char))
-    (indent-according-to-mode))
    (t
     (self-insert-command (prefix-numeric-value arg))
     (indent-according-to-mode))))

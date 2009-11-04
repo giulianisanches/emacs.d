@@ -20,6 +20,7 @@
 (load "config/erc")
 (load "config/gnus")
 (load "config/projects")
+(load "config/iswitchb")
 
 (setq custom-file "~/.emacs.d/config/custom.el")
 (load custom-file)

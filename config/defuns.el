@@ -24,3 +24,10 @@
 (defun shift-left ()
   (interactive)
   (shift-region -1))
+
+(defun trac-wiki-auto-mode-function ()
+  (if (and (eq major-mode 'text-mode)
+           (member (file-name-extension (buffer-file-name))
+                   '("txt" "wiki"))
+           (re-search-forward "^=+ [^=\n]+ =+\\s *$" nil t))
+      (trac-wiki-mode)))

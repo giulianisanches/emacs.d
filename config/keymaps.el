@@ -1,4 +1,3 @@
-(global-set-key "\C-x\C-f" 'find-file-save-default-directory)
 (global-set-key (kbd "RET") 'newline-and-indent)
 
 ;; Look at config/defuns.el

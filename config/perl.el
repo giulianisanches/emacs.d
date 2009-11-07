@@ -1,3 +1,4 @@
+(load-file "~/.emacs.d/vendor/cperl-mode.el")
 (defalias 'perl-mode 'cperl-mode)
 
 (require 'perltidy)

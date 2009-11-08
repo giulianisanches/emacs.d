@@ -25,3 +25,5 @@
 
 (require 'textmate)
 (tm/initialize)
+
+(require 'php-mode)

@@ -5,8 +5,8 @@ package $1;
 use strict;
 use warnings;
 
-use base $4;
+use base $2;
 
-$3
+$0
 
 1;

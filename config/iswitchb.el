@@ -6,3 +6,4 @@
 (add-to-list 'iswitchb-buffer-ignore "*Completions*")
 (add-to-list 'iswitchb-buffer-ignore "*Buffe List*")
 (add-to-list 'iswitchb-buffer-ignore "*Help*")
+(add-to-list 'iswitchb-buffer-ignore "*Backtrace*")

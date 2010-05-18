@@ -1,8 +1,5 @@
-(load-file "~/.emacs.d/vendor/cperl-mode.el")
+(load "cperl-mode")
 (defalias 'perl-mode 'cperl-mode)
-
-(require 'perltidy)
-(require 'perlcritic)
 
 (add-to-list 'auto-mode-alist '("\\.t$" . cperl-mode))
 

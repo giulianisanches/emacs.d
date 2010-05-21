@@ -9,3 +9,6 @@
 
 ;; Use ctrl tab to change buffer.
 (global-set-key [C-tab] 'buffer-menu)
+
+;; Run perltidy when the C-ct key sequence is used
+(global-set-key "\C-ct" 'perltidy)

@@ -23,7 +23,7 @@
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 
-(require 'textmate)
-(tm/initialize)
+(require 'autopair)
+(autopair-global-mode)
 
 (require 'uniquify)

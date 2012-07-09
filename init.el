@@ -14,11 +14,8 @@
 (load "config/indentation")
 (load "config/hooks")
 (load "config/theme")
-(load "config/perl")
 (load "config/yasnippet")
 (load "config/modes")
-(load "config/erc")
-(load "config/gnus")
 (load "config/projects")
 (load "config/iswitchb")
 

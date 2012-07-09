@@ -9,6 +9,11 @@
 (setq kill-whole-line t)
 (setq default-truncate-lines t)
 
+(setq mac-option-key-is-meta nil)
+(setq mac-command-key-is-meta t)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (prefer-coding-system 'utf-8)

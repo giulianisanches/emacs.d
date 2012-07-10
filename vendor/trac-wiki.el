@@ -1921,24 +1921,7 @@ if too many version exists."
 
 (defun trac-wiki-convert-to-readable-time-string (str)
   "Parse STR as ISO format time and return encoded time value."
-  (if (not (string-match (concat "\\`"
-				 "\\([0-9][0-9][0-9][0-9]\\)"
-				 "\\([0-9][0-9]\\)"
-				 "\\([0-9][0-9]\\)"
-				 "T"
-				 "\\([0-9][0-9]?\\)"
-				 ":"
-				 "\\([0-9][0-9]?\\)"
-				 ":"
-				 "\\([0-9][0-9]?\\)"
-				 "\\([-+][0-9][0-9][0-9][0-9]\\)?"
-				 "\\'")
-			 str))
-      (error "Invalid time format: %s" str)
-    (apply 'format "%s-%s-%s %s:%s:%s%s"
-	   (append (mapcar (lambda (n)
-			     (or (match-string n str) ""))
-			   '(1 2 3 4 5 6 7))))))
+  (xml-rpc-datetime-to-string str))
 
       
 (defun trac-wiki-collect-macro-names ()

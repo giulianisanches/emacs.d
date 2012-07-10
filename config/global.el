@@ -9,6 +9,9 @@
 (setq kill-whole-line t)
 (setq default-truncate-lines t)
 
+(if (eq system-type 'windows-nt)
+    (set-face-attribute 'default nil :font "Consolas-11")
+)
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
 (setq mac-command-modifier 'meta)

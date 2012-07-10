@@ -1,6 +1,5 @@
 (require 'yasnippet)
 (yas/initialize)
 
-(setq yas/root-directory '("~/.emacs.d/config/snippets"
-      "~/.emacs.d/vendor/yasnippet/snippets"))
+(setq yas/root-directory '("~/.emacs.d/snippets"))
 (mapc 'yas/load-directory yas/root-directory)

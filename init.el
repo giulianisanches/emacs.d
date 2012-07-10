@@ -14,10 +14,7 @@
 (load "config/indentation")
 (load "config/hooks")
 (load "config/theme")
-(load "config/yasnippet")
-(load "config/modes")
 (load "config/projects")
-(load "config/iswitchb")
 
 (setq custom-file "~/.emacs.d/config/custom.el")
 (load custom-file)

@@ -12,6 +12,7 @@
 (if (eq system-type 'windows-nt)
     (set-face-attribute 'default nil :font "Consolas-11")
 )
+
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
 (setq mac-command-modifier 'meta)
@@ -34,4 +35,13 @@
 (require 'autopair)
 (autopair-global-mode)
 
+(require 'yasnippet)
+(yas/global-mode 1)
+
+(require 'iswitchb)
+(iswitchb-mode 1)
+(add-to-list 'iswitchb-buffer-ignore "^\\*")
+
 (require 'uniquify)
+(require 'eproject)
+(require 'eproject-extras)

@@ -1,4 +1,4 @@
-;; eproject.el - assign files to projects, programatically
+;;; eproject.el --- assign files to projects, programatically
 ;;
 ;; Copyright (C) 2008, 2009 Jonathan Rockway <jon@jrock.us>
 ;;
@@ -55,7 +55,7 @@
 ;; set metadata via the eproject-attribute and
 ;; eproject-add-project-metadatum calls.
 ;;
-;; (This is mostly helpful to lisp programmers rather than end-users;
+;; (This is mostly helpful to Lisp programmers rather than end-users;
 ;; if you want tools for visiting and managing projects (and ibuffer
 ;; integration), load `eproject-extras'.  These extras are great
 ;; examples of the eproject API in action, so please take a look even
@@ -130,6 +130,8 @@
 
 ;; define-project-attribute
 
+;; eproject-projects
+
 ;; Everything else is mostly used internally, and may change.
 
 ;;; Public commands:
@@ -143,6 +145,9 @@
 ;;
 ;; - re-read config for the current project, then run
 ;;   eproject-maybe-turn-on
+;;
+;;   this is bound to C-c C-c when editing .eproject files, which is
+;;   very convenient for testing.
 
 ;; See eproject-extras.el for more interesting / useful commands.
 ;; This file is mostly "plumbing".
@@ -166,7 +171,16 @@
 ;; http://wiki.github.com/jrockway/eproject
 ;;
 
-;;; Changelog:
+;;; The Changelog section documents major changes.  Minor non-breaking
+;;; updates are regularly committed to git.
+
+;;;  Changelog:
+;;
+;; 1.6 (Sat Aug 28 22:21:39 CDT 2010)
+;;
+;; * Remove eproject-project-names variable and add some proper
+;;   introspection for project sets.
+;;
 ;; 1.5 (Thu May 28 21:38:08 MST 2009)
 ;;
 ;; * Split out the non-core stuff into eproject-extras.el.
@@ -207,11 +221,17 @@
   :link '(emacs-library-link :tag "Optional extras" "eproject-extras.el")
   :link '(url-link :tag "Github wiki" "http://wiki.github.com/jrockway/eproject"))
 
+(defvar eproject-root nil
+  "A buffer-local variable set to the root of its eproject
+  project.  NIL if it isn't in an eproject.  Your code should
+  call the function `eproject-root` instead of accessing this
+  variable directly.  It should also not set it; only
+  `eproject-maybe-turn-on' can do that.")
+
+(make-variable-buffer-local 'eproject-root)
+
 (defvar eproject-project-types nil
   "An alist of project type name to (supertypes selector metadata-plist) pairs.")
-
-(defvar eproject-project-names nil
-  "A list of project names known to emacs.  Populated as projects are opened, but may be prepopulated via .emacs if desired.")
 
 (defvar eproject-extra-attributes nil
   "A list of pairs used to assign attributes to projects.
@@ -229,6 +249,20 @@ accordingly.  If KEY matches a project root, its ATTRIBUTES are
 applied.
 
 ATTRIBUTES is a plist of attributes.")
+
+(defvar eproject-attributes-alist nil
+  "An alist of project root -> plist of project metadata.")
+
+(defvar eproject-first-buffer-hook nil
+  "Hook to run when the first buffer in a new project is opened.
+  Called after the project is initialized, so it's safe to call
+  eproject functions.")
+
+(defvar eproject-projects-hook nil
+  "Hook that's run when a list of projects is requested.  Hook may return a list of new (name . root) pairs to be added to eproject's internal list.")
+
+(defvar eproject-project-change-hook nil
+  "Hook that's run when a project is changed; currently this means when a file in the project is saved.")
 
 (defun define-project-attribute (key attributes)
   "Define extra attributes to be applied to projects.
@@ -281,6 +315,7 @@ become project attributes."
   :relevant-files (".*")
   :irrelevant-files ("^[.]" "^[#]")
   :file-name-map (lambda (root) (lambda (root file) file))
+  :local-variables (lambda (root) (lambda (root file) nil))
   :config-file ".eproject")
 
 (define-project-type generic-eproject (generic) (look-for ".eproject"))
@@ -316,23 +351,27 @@ what to look for.  Some examples:
                       (> (length (file-expand-wildcards expression)) 0))))))
     (otherwise (error "Don't know how to handle %s in LOOK-FOR!" type))))
 
-(defun* eproject--run-project-selector (type &optional (file (buffer-file-name)))
+(defun eproject--buffer-file-name ()
+  (or (buffer-file-name) (and (eq major-mode 'dired-mode)
+                              (expand-file-name (if (consp dired-directory)
+                                                    (car dired-directory)
+                                                  dired-directory)))))
+
+(defun* eproject--run-project-selector (type &optional (file (eproject--buffer-file-name)))
   "Run the selector associated with project type TYPE."
   (when (not file)
-    (cond ((eq major-mode 'dired-mode)
-           (setq file (expand-file-name dired-directory)))
-          (t (error "Buffer '%s' has no file name" (current-buffer)))))
+    (error "Buffer '%s' has no file name" (current-buffer)))
   (flet ((look-for (expr &optional (expr-type :filename))
                    (funcall #'eproject--look-for-impl file expr expr-type)))
     (funcall (eproject--project-selector type) file)))
 
 (defun eproject--linearized-isa (type &optional include-self)
   (delete-duplicates
-   (nconc
+   (append
     (if include-self (list type))
     (eproject--project-supertypes type)
     (loop for stype in (eproject--project-supertypes type)
-          nconc (eproject--linearized-isa stype)))))
+          append (eproject--linearized-isa stype)))))
 
 (defun eproject--all-types ()
   ;; this should be most specific to least specific, as long as nothing
@@ -352,11 +391,6 @@ what to look for.  Some examples:
 (defun eproject-add-project-metadatum (type key value)
   (setf (getf (nth 3 (assoc type eproject-project-types)) key) value))
 
-(defvar eproject-root nil
-  "A buffer-local variable set to the root of its eproject project.  NIL if it isn't in an eproject.")
-
-(make-variable-buffer-local 'eproject-root)
-
 (defmacro* eproject--do-in-buffer ((buffer) &body forms)
   `(with-current-buffer ,buffer
      (when (not eproject-mode)
@@ -367,9 +401,6 @@ what to look for.  Some examples:
   "Return the value of the eproject variable root.
 BUFFER defaults to the current buffer"
   (eproject--do-in-buffer (buffer) eproject-root))
-
-(defvar eproject-attributes-alist nil
-  "An alist of project root -> plist of project metadata.")
 
 (defun* eproject-attribute (key &optional (root (eproject-root)))
   "Lookup the attribute KEY for the eproject ROOT
@@ -398,7 +429,16 @@ ROOT defaults to the current buffer's project-root."
     (setf eproject-attributes-alist
           (delete-if (lambda (x) (equal (car x) root))
                      eproject-attributes-alist)))
-  (eproject-maybe-turn-on))
+  (eproject-maybe-turn-on)
+  (if (ignore-errors (eproject-root))
+      (message "Project `%s' reinitialized successfully." (eproject-name))
+    (message "Error reinitializing project!")))
+
+(defun eproject--maybe-reinitialize ()
+  "Run by `eproject-project-change-hook' to reinit the project after .eproject is modified."
+  (when (and (eq major-mode 'dot-eproject-mode)
+             (boundp 'eproject-root) eproject-root)
+    (eproject-reinitialize-project)))
 
 (defun eproject--eval-user-data (project-name root)
   "Interpret EPROJECT-EXTRA-ATTRIBUTES for PROJECT-NAME (in ROOT)."
@@ -459,8 +499,14 @@ else through unchanged."
                      (nconc config-file-data class-data))
                     (t class-data)))
 
-             ;; calculate the project name, as it's used by "user data"
-             (name (or (getf class-and-config-data :project-name)
+             ;; calculate the project name, as it's used by "user
+             ;; data"
+
+             ;; backcompat note: not sure why i looked in
+             ;; :project-name for the value to set the :name attribute
+             ;; to.  so now we look in both, preferring the new way.
+             (name (or (getf class-and-config-data :name)
+                       (getf class-and-config-data :project-name)
                        (directory-file-name
                         (elt (reverse (eshell-split-path root)) 0))))
 
@@ -475,26 +521,73 @@ else through unchanged."
         (add-to-list 'eproject-attributes-alist
                      (cons root (nconc (list :type type :name name) data)))))))
 
+(defvar eproject-mode-map (make-sparse-keymap)
+  "Keybindings while in eproject-mode")
+
 (define-minor-mode eproject-mode
   "A minor mode for buffers that are a member of an eproject project."
-  nil " Project"
-  '(("" . eproject-ifind-file)
-    ("" . eproject-ibuffer))
+  nil " Project" eproject-mode-map
   (when (null eproject-root)
     (error "Please do not use this directly.  Call eproject-maybe-turn-on instead.")))
 
 (defun eproject-maybe-turn-on ()
   "Turn on eproject for the current buffer, if it is in a project."
   (interactive)
-  (loop for type in (eproject--all-types)
-        do (let ((root (eproject--run-project-selector type)))
-             (when root
-               (setq eproject-root (file-name-as-directory root))
-               (eproject--init-attributes eproject-root type)
-               (eproject-mode 1)
-               (add-to-list 'eproject-project-names (eproject-name))
-               (run-hooks (intern (format "%s-project-file-visit-hook" type)))
-               (return root)))))
+  (let (bestroot besttype (set-before (mapcar #'car eproject-attributes-alist)))
+    (loop for type in (eproject--all-types)
+          do (let ((root (eproject--run-project-selector type)))
+               (when (and root
+                          (or (not bestroot)
+                              ;; longest filename == best match (XXX:
+                              ;; need to canonicalize?)
+                              (> (length root) (length bestroot))))
+                 (setq bestroot root)
+                 (setq besttype type))))
+    (when bestroot
+      (setq eproject-root (file-name-as-directory bestroot))
+
+      ;; read .eproject file (etc.) and initialize at least :name and
+      ;; :type
+      (condition-case e
+          (eproject--init-attributes eproject-root besttype)
+        (error (display-warning 'warning
+            (format "There was a problem setting up the eproject attributes for this project: %s" e))))
+
+      ;; with :name and :type set, it's now safe to turn on eproject
+      (eproject-mode 1)
+
+      ;; initialize buffer-local variables that the project defines
+      ;; (called after we turn on eproject-mode, so we can call
+      ;; eproject-* functions cleanly)
+      (condition-case e
+          (eproject--setup-local-variables)
+        (error (display-warning 'warning
+          (format "Problem initializing project-specific local-variables in %s: %s"
+                  (eproject--buffer-file-name) e))))
+
+      ;; run the first-buffer hooks if this is the first time we've
+      ;; seen this particular project root.
+      (when (not (member eproject-root set-before))
+        (run-hooks 'eproject-first-buffer-hook))
+
+      ;; run project-type hooks, which may also call into eproject-*
+      ;; functions
+      (run-hooks (intern (format "%s-project-file-visit-hook" besttype)))
+
+      ;; return the project root; it's occasionally useful for the caller
+      bestroot)))
+
+(defun eproject--setup-local-variables ()
+  "Setup local variables as specified by the project attribute :local-variables."
+  (let* ((var-maker (eproject-attribute :local-variables))
+         (vars (cond ((functionp var-maker)
+                      (funcall var-maker
+                               (eproject-root)
+                               (file-relative-name (eproject--buffer-file-name)
+                                                   (eproject-root))))
+                     ((listp var-maker) var-maker))))
+    (loop for (name val) on vars by #'cddr do
+          (set (make-local-variable name) val))))
 
 (defun eproject--search-directory-tree (directory file-regexp ignore-regexp)
   (loop for file in (directory-files (file-name-as-directory directory) t "^[^.]" t)
@@ -517,22 +610,92 @@ else through unchanged."
                    (current-buffer) type))))
 
 (defun eproject--combine-regexps (regexp-list)
+  "Combine regexps like `regexp-opt', but without quoting anything.
+Argument REGEXP-LIST is a list of regexps to combine."
   (format "\\(?:%s\\)"
           (reduce (lambda (a b) (concat a "\\|" b))
                   (mapcar (lambda (f) (format "\\(?:%s\\)" f)) regexp-list))))
 
-(defun* eproject-list-project-files (&optional (root (eproject-root)))
-  "Return a list of all project files in PROJECT-ROOT."
+;;; TODO: cache this?
+(defun eproject--file-check-regexps (root)
+  "Return a pair (matcher . ignore) for the project in ROOT."
   (let ((matcher (eproject--combine-regexps
                   (eproject-attribute :relevant-files root)))
-        (ignore (eproject--combine-regexps (cons
-                 (concat (regexp-opt completion-ignored-extensions t) "$")
-                 (eproject-attribute :irrelevant-files root)))))
+        (ignore (eproject--combine-regexps
+                 (cons
+                  (concat (regexp-opt completion-ignored-extensions t) "$")
+                  (eproject-attribute :irrelevant-files root)))))
+    (cons matcher ignore)))
+
+(defun* eproject-classify-file (file &optional (root (eproject-root)))
+  "Return T if FILE would belong to the project in ROOT.
+
+No check is done to ensure that the root subsumes FILE or even
+that FILE is an absolute path."
+  ;; XXX: this logic is sort of copied from search-directory-tree.
+  ;; maybe combine?
+  (destructuring-bind (matcher . ignore) (eproject--file-check-regexps root)
+    (and (not (string-match ignore file))
+         (not (string-match ignore (file-name-nondirectory file)))
+         (string-match matcher file)
+         t)))
+
+(defun* eproject-list-project-files (&optional (root (eproject-root)))
+  "Return a list of all project files in PROJECT-ROOT."
+  (destructuring-bind (matcher . ignore) (eproject--file-check-regexps root)
     (eproject--search-directory-tree root matcher ignore)))
 
-;; finish up
+(defun* eproject-list-project-files-relative (&optional (root (eproject-root)))
+  (mapcar (lambda (file)
+            (file-relative-name file root))
+          (eproject-list-project-files root)))
+
+;;; dot-eproject mode
+
+(define-derived-mode dot-eproject-mode emacs-lisp-mode "dot-eproject"
+  "Major mode for editing .eproject files."
+  (define-key dot-eproject-mode-map (kbd "C-c C-c") #'eproject-reinitialize-project))
+
+;; introspect sets of projects
+(defun eproject-projects ()
+  "Return a list of (name . root) pairs of all known eproject projects."
+  (let ((hash (make-hash-table :test 'equal)))
+    (loop for f in eproject-projects-hook do
+          (loop for (name . root) in (funcall f)
+                do (puthash name root hash)))
+    (loop for (root . rest)
+          in eproject-attributes-alist
+          do (puthash (or (getf rest :name) (getf rest :project-name))
+                      root hash))
+    (loop for name being each hash-key in hash
+          collect (cons name (gethash name hash)))))
+
+(defun eproject-project-names ()
+  "Return a list of project names known to eproject."
+  (mapcar #'car (eproject-projects)))
+
+;; Finish up
+(defun eproject--after-change-major-mode-hook ()
+  (when (and (buffer-file-name)
+             (not eproject-root))
+    (eproject-maybe-turn-on)))
+
+(defun eproject--after-save-hook ()
+  ;; TODO: perhaps check against relevant-files or irrelevant-files
+  ;; regex?  I'm avoiding this now because I'd rather not force the
+  ;; speed hit -- if the user wants to do something slow after save,
+  ;; fine... but I'd rather not make the decision for him.
+  (when (and (boundp 'eproject-root) eproject-root)
+    (run-hooks 'eproject-project-change-hook)))
+
 (add-hook 'find-file-hook #'eproject-maybe-turn-on)
 (add-hook 'dired-mode-hook #'eproject-maybe-turn-on)
+(add-hook 'after-change-major-mode-hook #'eproject--after-change-major-mode-hook)
+(add-hook 'after-save-hook #'eproject--after-save-hook)
+
+(add-hook 'eproject-project-change-hook #'eproject--maybe-reinitialize)
+
+(add-to-list 'auto-mode-alist '("\\.eproject$" . dot-eproject-mode))
 
 (provide 'eproject)
 ;;; eproject.el ends here

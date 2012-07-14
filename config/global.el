@@ -42,6 +42,9 @@
 (iswitchb-mode 1)
 (add-to-list 'iswitchb-buffer-ignore "^\\*")
 
+(require 'tramp)
+(setq tramp-default-method "sftp")
+
 (require 'uniquify)
 (require 'eproject)
 (require 'eproject-extras)

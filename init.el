@@ -1,7 +1,7 @@
 ;; Heavily inspired for
 ;; Ryan McGuire emacs cofiguration bundle: http://github.com/EnigmaCurry/emacs
 ;; Chris Wanstrath http://github.com/defunkt/emacs
-;; And some tips from Eden Cardim
+;; And some tips from Eden Cardim (http://edencardim.com)
 
 (add-to-list 'load-path "~/.emacs.d")
 
@@ -15,6 +15,8 @@
 (load "config/hooks")
 (load "config/theme")
 (load "config/projects")
+(load "config/python")
+(load "config/recentf")
 
 (setq custom-file "~/.emacs.d/config/custom.el")
 (load custom-file)

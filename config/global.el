@@ -43,7 +43,9 @@
 (add-to-list 'iswitchb-buffer-ignore "^\\*")
 
 (require 'tramp)
-(setq tramp-default-method "sftp")
+(if (eq system-type 'windows-nt)
+    (setq tramp-default-method "plink")
+  (setq tramp-default-method "sftp"))
 
 (require 'uniquify)
 (require 'eproject)

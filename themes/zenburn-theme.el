@@ -367,7 +367,7 @@
    ;; magit
    `(magit-section-title ((,class (:foreground ,zenburn-yellow :weight bold))))
    `(magit-branch ((,class (:foreground ,zenburn-orange :weight bold))))
-   `(magit-item-highlight ((,class (:background ,zenburn-bg+1 :weight bold))))
+   `(magit-item-highlight ((,class (:background ,zenburn-bg+1))))
 
    ;; message-mode
    `(message-cited-text ((,class (:inherit font-lock-comment))))
@@ -414,10 +414,6 @@
    `(paren-face-match ((,class (:foreground ,zenburn-cyan :background ,zenburn-bg :weight bold))))
    `(paren-face-mismatch ((,class (:foreground ,zenburn-bg :background ,zenburn-magenta :weight bold))))
    `(paren-face-no-match ((,class (:foreground ,zenburn-bg :background ,zenburn-red :weight bold))))
-
-   ;; mumamo
-   `(mumamo-background-chunk-major ((,class (:background nil))))
-   `(mumamo-background-chunk-submode1 ((,class (:background ,zenburn-bg-1))))
 
    ;; nav
    `(nav-face-heading ((,class (:foreground ,zenburn-yellow))))
@@ -466,7 +462,9 @@
    `(org-time-grid ((,class (:foreground ,zenburn-orange))))
    `(org-todo ((,class (:bold t :foreground ,zenburn-red :weight bold))))
    `(org-upcoming-deadline ((,class (:inherit font-lock-keyword-face))))
-   `(org-warning ((,class (:bold t :foreground ,zenburn-red :weight bold))))
+   `(org-warning ((,class (:bold t :foreground ,zenburn-red :weight bold :underline nil))))
+   `(org-column ((,class (:background ,zenburn-bg-1))))
+   `(org-column-title ((,class (:background ,zenburn-bg-1 :underline t :weight bold))))
 
    ;; outline
    `(outline-8 ((,class (:inherit default))))
@@ -577,7 +575,13 @@
                                           ,zenburn-blue ,zenburn-magenta ,zenburn-cyan ,zenburn-fg])
 
    ;; fill-column-indicator
-   `(fci-rule-color ,zenburn-bg-05)))
+   `(fci-rule-color ,zenburn-bg-05))
+
+  ;;; colors for the ansi-term
+  (eval-after-load 'term
+    `(setq ansi-term-color-vector
+         (vector 'unspecified ,zenburn-bg ,zenburn-red ,zenburn-green ,zenburn-yellow
+		   ,zenburn-blue ,zenburn-magenta ,zenburn-cyan ,zenburn-fg))))
 
 ;;;###autoload
 (when load-file-name
@@ -589,7 +593,7 @@
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; indent-tabs-mode: nil
-;; eval: (rainbow-delimiters-mode 1)
+;; eval: (when (fboundp 'rainbow-mode) (rainbow-mode +1))
 ;; End:
 
 ;;; zenburn-theme.el ends here.

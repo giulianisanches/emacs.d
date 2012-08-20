@@ -50,3 +50,4 @@
 (require 'uniquify)
 (require 'eproject)
 (require 'eproject-extras)
+(require 'iedit)

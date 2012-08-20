@@ -8,8 +8,8 @@
 (global-set-key (kbd "C-c f") 'recentf-open-files)
 (global-set-key (kbd "C-c r") 'revert-buffer)
 
-;; Comment and uncomment
-(global-set-key (kbd "C-;") 'comment-or-uncomment-region)
+;; See config/defuns.el for details
+(global-set-key (kbd "M-;") 'comment-dwin-line)
 
 ;; Use ctrl tab to change buffer.
 (global-set-key [C-tab] 'buffer-menu)

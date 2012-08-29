@@ -9,10 +9,10 @@
 (progn (cd "~/.emacs.d/vendor") (normal-top-level-add-subdirs-to-load-path))
 
 (load "config/global")
+(load "config/indentation")
+(load "config/hooks")
 (load "config/defuns")
 (load "config/keymaps")
-(load "config/hooks")
-(load "config/indentation")
 (load "config/projects")
 (load "config/python")
 (load "config/recentf")

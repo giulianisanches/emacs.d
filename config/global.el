@@ -54,6 +54,3 @@
 
 (require 'epa-file)
 (epa-file-enable)
-
-(require 'twittering-mode)
-(setq twittering-use-master-password t)

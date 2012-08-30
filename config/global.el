@@ -51,3 +51,9 @@
 (require 'eproject)
 (require 'eproject-extras)
 (require 'iedit)
+
+(require 'epa-file)
+(epa-file-enable)
+
+(require 'twittering-mode)
+(setq twittering-use-master-password t)

@@ -12,11 +12,11 @@
 
 (defun shift-right ()
   (interactive)
-  (shift-region 1))
+  (shift-region tab-width))
 
 (defun shift-left ()
   (interactive)
-  (shift-region -1))
+  (shift-region (* -1 tab-width)))
 
 (defun trac-wiki-auto-mode-function ()
   (if (and (eq major-mode 'text-mode)

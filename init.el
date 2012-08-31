@@ -18,6 +18,7 @@
 (load "config/recentf")
 (load "config/theme")
 (load "config/sql")
+(load "config/twitter")
 (load "vendor/nxhtml/autostart.el")
 
 (setq custom-file "~/.emacs.d/config/custom.el")

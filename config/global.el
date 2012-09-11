@@ -3,6 +3,7 @@
         (width . 80) (height . 36)))
 
 (setq inhibit-startup-message t)
+(setq initial-scratch-message nil)
 (setq make-backup-files nil)
 (setq scroll-step 1)
 (setq default-major-mode 'text-mode)
@@ -54,3 +55,6 @@
 
 (require 'epa-file)
 (epa-file-enable)
+
+(require 'clojure-mode)
+(require 'paredit)

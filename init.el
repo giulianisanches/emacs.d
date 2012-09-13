@@ -3,6 +3,8 @@
 ;; Chris Wanstrath http://github.com/defunkt/emacs
 ;; And some tips from Eden Cardim (http://edencardim.com)
 
+(add-to-list 'exec-path "/usr/local/bin")
+
 (add-to-list 'load-path "~/.emacs.d")
 
 (add-to-list 'load-path "~/.emacs.d/vendor")
@@ -19,6 +21,12 @@
 (load "config/theme")
 (load "config/sql")
 (load "config/twitter")
+
+;; i'm do not have plans to use erc on windows for a while
+(if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
+    (load "config/erc")
+)
+
 (load "vendor/nxhtml/autostart.el")
 
 (setq custom-file "~/.emacs.d/config/custom.el")

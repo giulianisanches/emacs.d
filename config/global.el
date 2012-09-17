@@ -58,3 +58,4 @@
 
 (require 'clojure-mode)
 (require 'paredit)
+(require 'org)

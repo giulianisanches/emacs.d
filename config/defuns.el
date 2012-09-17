@@ -37,7 +37,8 @@
   (interactive "*P")
   (comment-normalize-vars)
   (if (and (not (region-active-p)) (not (looking-at "[ \t]*$")))
-      (comment-or-uncomment-region (line-beginning-position) (line-end-position))
+      (comment-or-uncomment-region
+       (line-beginning-position) (line-end-position))
     (comment-dwim arg)))
 
 (defun uniq-lines (beg end)

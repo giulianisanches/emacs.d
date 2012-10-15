@@ -21,6 +21,7 @@
 (load "config/theme")
 (load "config/sql")
 (load "config/twitter")
+(load "config/tramp")
 
 ;; i'm do not have plans to use erc on windows for a while
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))

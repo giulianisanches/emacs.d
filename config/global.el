@@ -44,8 +44,6 @@
 (add-to-list 'iswitchb-buffer-ignore "^\\*")
 
 (require 'uniquify)
-(require 'eproject)
-(require 'eproject-extras)
 (require 'iedit)
 
 (require 'epa-file)

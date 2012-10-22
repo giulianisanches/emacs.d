@@ -5,7 +5,7 @@
 ;; Author: Tim King <kingtim@gmail.com>
 ;;         Phil Hagelberg <technomancy@gmail.com>
 ;; URL: http://www.github.com/kingtim/nrepl.el
-;; Version: 0.1.5
+;; Version: 0.1.6
 ;; Keywords: languages, clojure, nrepl
 ;; Package-Requires: ((clojure-mode "1.11"))
 
@@ -62,6 +62,9 @@
   :prefix "nrepl-"
   :group 'applications)
 
+(defvar nrepl-version "0.1.6-preview"
+  "The current nrepl version.")
+
 (defcustom nrepl-connected-hook nil
   "List of functions to call when connecting to the nREPL server."
   :type 'hook
@@ -72,8 +75,10 @@
    :type 'string
    :group 'nrepl)
 
-(defvar nrepl-version "0.1.5-preview"
-  "The current nrepl version.")
+(defcustom nrepl-port nil
+   "The default port to connect to."
+   :type 'string
+   :group 'nrepl)
 
 (defvar nrepl-connection-buffer "*nrepl-connection*")
 (defvar nrepl-server-buffer "*nrepl-server*")
@@ -359,7 +364,7 @@ joined together.")
   "Return a list of completions using complete.core/completions."
   (let ((strlst (plist-get
                  (nrepl-send-string-sync
-                  (format "(complete.core/completions \"%s\" *ns*)" str)
+                  (format "(require 'complete.core) (complete.core/completions \"%s\" *ns*)" str)
                   nrepl-buffer-ns
                   (nrepl-current-tooling-session))
                  :value)))
@@ -432,6 +437,37 @@ joined together.")
   (apply 'eldoc-add-command nrepl-extra-eldoc-commands)
   (turn-on-eldoc-mode))
 
+
+;;; JavaDoc Browsing
+;;; Assumes local-paths are accessible in the VM.
+(defvar nrepl-javadoc-local-paths nil
+ "List of paths to directories with javadoc")
+
+(defun nrepl-javadoc-op (symbol-name)
+  (nrepl-send-op
+   "javadoc"
+   `("symbol" ,symbol-name "ns" ,nrepl-buffer-ns
+     "local-paths" ,(mapconcat #'identity nrepl-javadoc-local-paths " "))
+   (nrepl-make-response-handler
+    (current-buffer)
+    (lambda (buffer url)
+      (if url
+          (browse-url url)
+        (error "No javadoc url for %s" symbol-name)))
+    nil nil nil)))
+
+(defun nrepl-javadoc-handler (symbol-name)
+  (when symbol-name
+    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (if (nrepl-op-supported-p "javadoc")
+          (nrepl-javadoc-op symbol-name)
+        (message "No javadoc middleware available")))))
+
+(defun nrepl-javadoc (query)
+  "Browse javadoc on the Java class at point."
+  (interactive "P")
+  (nrepl-read-symbol-name "Javadoc for: " 'nrepl-javadoc-handler query))
+
 ;;; Response handlers
 (defmacro nrepl-dbind-response (response keys &rest body)
   "Destructure an nREPL response dict."
@@ -448,7 +484,8 @@ joined together.")
                 (stderr-handler stderr-handler)
                 (done-handler done-handler))
     (lambda (response)
-      (nrepl-dbind-response response (value ns out err status id ex root-ex)
+      (nrepl-dbind-response response (value ns out err status id ex root-ex
+                                      session)
         (cond (value
                (with-current-buffer buffer
                  (if ns
@@ -465,7 +502,7 @@ joined together.")
                (if (member "interrupted" status)
                    (message "Evaluation interrupted."))
                (if (member "eval-error" status)
-                   (funcall nrepl-err-handler buffer ex root-ex))
+                   (funcall nrepl-err-handler buffer ex root-ex session))
                (if (member "namespace-not-found" status)
                    (message "Namespace not found."))
                (if (member "need-input" status)
@@ -547,8 +584,7 @@ joined together.")
                                  (nrepl-emit-into-popup-buffer buffer str))
                                '()))
 
-(defun nrepl-default-err-handler (buffer ex root-ex)
-  ;; TODO: use pst+ here for colorization. currently breaks bencode.
+(defun nrepl-default-err-handler (buffer ex root-ex session)
   ;; TODO: use ex and root-ex as fallback values to display when pst/print-stack-trace-not-found
   (if (or nrepl-popup-stacktraces
           (not (eq 'nrepl-mode
@@ -560,7 +596,7 @@ joined together.")
                            (nrepl-make-response-handler
                             (nrepl-popup-buffer nrepl-error-buffer)
                             nil
-                            'nrepl-emit-into-color-buffer nil nil)))
+                            'nrepl-emit-into-color-buffer nil nil) nil session))
     ;; TODO: maybe put the stacktrace in a tmp buffer somewhere that the user
     ;; can pull up with a hotkey only when interested in seeing it?
     ))
@@ -745,6 +781,16 @@ in a macroexpansion buffer. Prefix argument forces pretty-printed output."
     (nrepl-send-string form
                        (nrepl-interactive-eval-handler buffer)
                        nrepl-buffer-ns)))
+
+(defun nrepl-send-op (op attributes handler)
+  "Send the specified op."
+  (let ((buffer (current-buffer)))
+    (nrepl-send-request (append
+                         (list "op" op
+                               "session" (nrepl-current-session)
+                               "ns" nrepl-buffer-ns)
+                         attributes)
+                        handler)))
 
 (defun nrepl-send-load-file (file-contents file-path file-name)
   "Evaluate the given form and print value in minibuffer."
@@ -1023,6 +1069,7 @@ This function is meant to be used in hooks to avoid lambda
     (define-key map (kbd "C-c C-k") 'nrepl-load-current-buffer)
     (define-key map (kbd "C-c C-l") 'nrepl-load-file)
     (define-key map (kbd "C-c C-b") 'nrepl-interrupt)
+    (define-key map (kbd "C-c b") 'nrepl-javadoc)
     map))
 
 (easy-menu-define nrepl-interaction-mode-menu nrepl-interaction-mode-map
@@ -1068,6 +1115,7 @@ This function is meant to be used in hooks to avoid lambda
     (define-key map (kbd "C-c C-n") 'nrepl-next-prompt)
     (define-key map (kbd "C-c C-p") 'nrepl-previous-prompt)
     (define-key map (kbd "C-c C-b") 'nrepl-interrupt)
+    (define-key map (kbd "C-c b") 'nrepl-javadoc)
     map))
 
 (easy-menu-define nrepl-mode-menu nrepl-mode-map
@@ -1217,12 +1265,20 @@ Return the position of the prompt beginning."
                                    (insert-before-markers string)))))
     (nrepl-show-maximum-output)))
 
+(defun nrepl-default-handler (response)
+  "Default handler which is invoked when no handler is found."
+  (nrepl-dbind-response response (out value)
+    (cond
+     (out
+      (nrepl-emit-interactive-output out)))))
+
 (defun nrepl-dispatch (response)
   "Dispatch the response to associated callback."
   (nrepl-dbind-response response (id)
     (let ((callback (gethash id nrepl-requests)))
       (if callback
-          (funcall callback response)))))
+          (funcall callback response)
+        (nrepl-default-handler response)))))
 
 (defun nrepl-net-decode ()
   "Decode the data in the current buffer and remove the processed data from the
@@ -1451,7 +1507,7 @@ earlier in the buffer."
    "Return t if the region from START to END contains a complete sexp."
    (save-excursion
      (goto-char start)
-     (cond ((looking-at "\\s *['`#]?[(\"]")
+     (cond ((looking-at "\\s *[@'`#]?[(\"]")
             (ignore-errors
               (save-restriction
                 (narrow-to-region start end)
@@ -1582,11 +1638,31 @@ text property `nrepl-old-input'."
 (defvar nrepl-words-of-inspiration
   `("The best way to predict the future is to invent it. -Alan Kay"
     "A point of view is worth 80 IQ points. -Alan Kay"
+    "Lisp isn't a language, it's a building material. -Alan Kay"
     "Simple things should be simple, complex things should be possible. -Alan Kay"
+    "Measuring programming progress by lines of code is like measuring aircraft building progress by weight. -Bill Gates"
+    "Controlling complexity is the essence of computer programming. -Brian Kernighan"
+    "The unavoidable price of reliability is simplicity. -C.A.R. Hoare"
+    "You're bound to be unhappy if you optimize everything. -Donald Knuth"
+    "Simplicity is prerequisite for reliability. -Edsger W. Dijkstra"
+    "Deleted code is debugged code. -Jeff Sickel"
+    "The key to performance is elegance, not battalions of special cases. -Jon Bentley and Doug McIlroy"
+    "First, solve the problem. Then, write the code. -John Johnson"
+    "Simplicity is the ultimate sophistication. -Leonardo da Vinci"
     "Programming is not about typing... it's about thinking. -Rich Hickey"
+    "Design is about pulling things apart. -Rich Hickey"
+    "Programmers know the benefits of everything and the tradeoffs of nothing. -Rich Hickey"
+    "Code never lies, comments sometimes do. -Ron Jeffries"
     "Take this nREPL, brother, and may it serve you well."
+    "Let the hacking commence!"
+    "Hacks and glory await!"
+    "Hack and be merry!"
+    "Your hacking starts... NOW!"
+    "May the Source be with you!"
+    "May the Source shine upon thy nREPL!"
     ,(format "%s, this could be the start of a beautiful program."
-              (nrepl-user-first-name))))
+             (nrepl-user-first-name)))
+  "Scientifically-proven optimal words of hackerish encouragement.")
 
 (defun nrepl-random-words-of-inspiration ()
    (eval (nth (random (length nrepl-words-of-inspiration))
@@ -1934,8 +2010,8 @@ restart the server."
 
 ;;;###autoload
 (defun nrepl (host port)
-  (interactive (list (read-from-minibuffer "Host: " nrepl-host)
-                     (string-to-number (read-from-minibuffer "Port: "))))
+  (interactive (list (read-string "Host: " nrepl-host nil nrepl-host)
+                     (string-to-number (read-string "Port: " nrepl-port nil nrepl-port))))
   (nrepl-connect host port))
 
 (provide 'nrepl)

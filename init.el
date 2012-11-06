@@ -4,6 +4,7 @@
 ;; And some tips from Eden Cardim (http://edencardim.com)
 
 (add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path "/usr/local/share/python")
 
 (add-to-list 'load-path "~/.emacs.d")
 

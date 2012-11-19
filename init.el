@@ -3,6 +3,7 @@
 ;; Chris Wanstrath http://github.com/defunkt/emacs
 ;; And some tips from Eden Cardim (http://edencardim.com)
 
+(add-to-list 'exec-path "/usr/bin")
 (add-to-list 'exec-path "/usr/local/bin")
 (add-to-list 'exec-path "/usr/local/share/python")
 

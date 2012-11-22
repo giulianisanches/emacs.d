@@ -1,3 +1,4 @@
+(require 'clojure-mode)
 (require 'nrepl)
 
 (setq nrepl-lein-command "/usr/local/bin/lein")
@@ -8,3 +9,5 @@
 (setq nrepl-popup-stacktraces nil)
 
 (add-to-list 'same-window-buffer-names "*nrepl*")
+
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)

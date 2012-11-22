@@ -3,12 +3,11 @@
 ;; Chris Wanstrath http://github.com/defunkt/emacs
 ;; And some tips from Eden Cardim (http://edencardim.com)
 
-(add-to-list 'exec-path "/usr/bin")
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "/usr/local/share/python")
+(when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
+  (add-to-list 'exec-path "/usr/local/bin")
+  (add-to-list 'exec-path "/usr/local/share/python"))
 
 (add-to-list 'load-path "~/.emacs.d")
-
 (add-to-list 'load-path "~/.emacs.d/vendor")
 (progn (cd "~/.emacs.d/vendor") (normal-top-level-add-subdirs-to-load-path))
 
@@ -24,12 +23,11 @@
 (load "config/sql")
 (load "config/twitter")
 (load "config/tramp")
-(load "config/nrepl")
+(load "config/clojure")
 
-;; i'm do not have plans to use erc on windows for a while
+;; i do not have plans to use erc on windows for a while
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
-    (load "config/erc")
-)
+    (load "config/erc"))
 
 (load "vendor/nxhtml/autostart.el")
 

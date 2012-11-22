@@ -1,11 +1,15 @@
 ;;  trac-wiki.el --- edit trac wiki pages in emacs via XML-RPC
 
 ;; Copyright (C) 2006  Shun-ichi GOTO
+;; Copyright (C) 2011 Tibor Simko
 
 ;; Author: Shun-ichi GOTO <shunichi.goto@gmail.com>
 ;; Keywords: trac, xml-rpc, wiki, wiki-rpc
 ;; Version: 1.7
 ;; URL: http://www.meadowy.org/~gotoh/projects/trac-wiki/
+
+;; Subsequently modified by Tibor Simko <tibor.simko@cern.ch>
+;; <https://github.com/tiborsimko/trac-wiki-el>
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -395,6 +399,9 @@ user may need or want to edit them.")
      (5 'shadow))
     ("^=.*" . font-lock-warning-face)	   ; invalid section heading
     ("`[^`\n]*`" . 'shadow)		   ; inline quote
+    ("\\*\\*[^\\*\n]*\\*\\*" . 'bold)      ; **bold**
+    ("\\/\\/[^\\/\n]*\\/\\/" . 'italic)    ; //italic//
+    ("{{{[^}]*}}}" . 'shadow)              ; {{{monospace}}} (incl. newlines)
     ("\\(''+\\)[^'\n]*\\(''+\\)"	   ; bold and italic
      (0 (let ((b (match-string 1))
 	      (e (match-string 2)))
@@ -715,7 +722,7 @@ url library behaviour."
   (let ((orig-basic-auth-storage (copy-sequence
 				  url-http-real-basic-auth-storage)))
     (unwind-protect
-	(setq trac-wiki-auth-retry-count 0 
+	(setq trac-wiki-auth-retry-count 0
 	      ad-return-value (trac-wiki-url-retrieve-synchronously url))
       ;; restore original if fail
       ;; merge with original if success
@@ -1088,7 +1095,7 @@ visit to PAGE without interaction."
     ;; If not page is not already visited, retrieve and edit.
     ;; Else ask re-use already visited buffer.
     ;; If re-used, check version is up-to-date and merge if need.
-    
+
     (if (catch 'found
 	  (dolist (buf (buffer-list))
 	    (set-buffer buf)
@@ -1223,7 +1230,7 @@ Note that return nil if MD5 is equal althogh `buffer-modified-p' is non-nil."
 		       (not (string= (trac-wiki-page-hash)
 				     (md5 (buffer-string) nil nil 'utf-8))))))
     modified))
-	
+
 (defun trac-wiki-revert ()
   "Revert to original content with discarding local change."
   (interactive)
@@ -1312,7 +1319,7 @@ If with prefix ARG, invoke `ediff' instead of `diff'."
 		(message "No difference.")))))
       (delete-file tmpa)
       (delete-file tmpb))))
-    
+
 (defun trac-wiki-ediff ()
   "Invoke `ediff' with original content."
   (interactive)
@@ -1704,7 +1711,7 @@ FILTERS is interactively selected if not specified."
   (if (re-search-backward trac-wiki-search-result-top-regexp nil t)
       (goto-char (match-beginning 1))
     (message "No more entry")))
-  
+
 (defun trac-wiki-search-result-get-page-name ()
   "Get page name of entry at point."
   (interactive)
@@ -1712,7 +1719,7 @@ FILTERS is interactively selected if not specified."
     (end-of-line)
     (if (re-search-backward trac-wiki-search-result-top-regexp nil t)
 	(match-string-no-properties 1))))
-  
+
 (defun trac-wiki-search-result-edit ()
   "Edit page of entry at point."
   (interactive)
@@ -1763,7 +1770,7 @@ WikiMacros page on remote site."
 			   'trac-wiki-page-name-cache
 			   ep no-cache
 			 (trac-rpc-get-all-pages)))))
-    
+
     (when (and kind candidates part)
       (let* ((pos (point))
 	     (beg (- pos (length part))))
@@ -1921,9 +1928,26 @@ if too many version exists."
 
 (defun trac-wiki-convert-to-readable-time-string (str)
   "Parse STR as ISO format time and return encoded time value."
-  (xml-rpc-datetime-to-string str))
+  (if (not (string-match (concat "\\`"
+				 "\\([0-9][0-9][0-9][0-9]\\)"
+				 "\\([0-9][0-9]\\)"
+				 "\\([0-9][0-9]\\)"
+				 "T"
+				 "\\([0-9][0-9]?\\)"
+				 ":"
+				 "\\([0-9][0-9]?\\)"
+				 ":"
+				 "\\([0-9][0-9]?\\)"
+				 "\\([-+][0-9][0-9][0-9][0-9]\\)?"
+				 "\\'")
+			 str))
+      (error "Invalid time format: %s" str)
+    (apply 'format "%s-%s-%s %s:%s:%s%s"
+	   (append (mapcar (lambda (n)
+			     (or (match-string n str) ""))
+			   '(1 2 3 4 5 6 7))))))
 
-      
+
 (defun trac-wiki-collect-macro-names ()
   "Collect available macro names from WikiMacro page."
   (let ((html (trac-rpc-get-page-html "WikiMacros"))
@@ -2026,7 +2050,7 @@ is made to access via login module.  This function uses command
 			(error "Invalid entry of PROJECTS: %s" proj))))
 	(trac-wiki-define-project name (concat parent subdir) login)))))
 
-;;; utility functions 
+;;; utility functions
 
 (defun trac-wiki-cleanup-auth-storage (storage)
   "Clean up duplicated auth info in STORAGE destructively.
@@ -2036,19 +2060,19 @@ Entries which has same realm are removed except 1st one
 and repeat all the realms and all the sites.
 For exmple:
  (trac-wiki-cleanup-auth-storage
-   '((\"site1:80\" (\"r1\" . \"A\") 
+   '((\"site1:80\" (\"r1\" . \"A\")
 		   (\"r1\" . \"B\")
 		   (\"r2\" . \"C\")
 		   (\"r1\" . \"D\")
 		   (\"r2\" . \"E\"))
-     (\"site2:80\" (\"r3\" . \"A\") 
+     (\"site2:80\" (\"r3\" . \"A\")
 		   (\"r4\" . \"B\")
 		   (\"r5\" . \"C\")
 		   (\"r5\" . \"D\")
 		   (\"r3\" . \"E\"))))
-=> '((\"site1:80\" (\"r1\" . \"A\") 
+=> '((\"site1:80\" (\"r1\" . \"A\")
 		   (\"r2\" . \"C\"))
-     (\"site2:80\" (\"r3\" . \"A\") 
+     (\"site2:80\" (\"r3\" . \"A\")
 		   (\"r4\" . \"B\")
 		   (\"r5\" . \"C\"))))
 

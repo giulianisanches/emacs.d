@@ -6,13 +6,12 @@
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)
 (setq scroll-step 1)
-(setq default-major-mode 'text-mode)
+(setq major-mode 'text-mode)
 (setq kill-whole-line t)
-(setq default-truncate-lines t)
+(setq truncate-lines t)
 
 (if (eq system-type 'windows-nt)
-    (set-face-attribute 'default nil :font "Consolas-11")
-)
+    (set-face-attribute 'default nil :font "Consolas-11"))
 
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
@@ -37,7 +36,7 @@
 (autopair-global-mode)
 
 (require 'yasnippet)
-(yas/global-mode 1)
+(yas-global-mode 1)
 
 (require 'iswitchb)
 (iswitchb-mode 1)
@@ -49,6 +48,6 @@
 (require 'epa-file)
 (epa-file-enable)
 
-(require 'clojure-mode)
 (require 'paredit)
 (require 'org)
+(require 'trac-wiki)

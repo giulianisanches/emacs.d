@@ -16,14 +16,15 @@
 (load "config/hooks")
 (load "config/defuns")
 (load "config/keymaps")
+(load "config/theme")
 (load "config/projects")
 (load "config/python")
 (load "config/recentf")
-(load "config/theme")
 (load "config/sql")
 (load "config/twitter")
 (load "config/tramp")
 (load "config/clojure")
+(load "config/perl")
 
 ;; i do not have plans to use erc on windows for a while
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))

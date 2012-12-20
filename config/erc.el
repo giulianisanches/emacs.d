@@ -1,7 +1,13 @@
 (require 'erc)
 
+(load "~/.emacs.d/config/erc-auth.el")
+
 (setq erc-autojoin-channels-alist
-      '((".*\\.freenode.net" "#clojure" "#python-br" "#clojure-br")))
+      '((".*\\.freenode.net" "#clojure" "#clojure-br")
+        ("irc.perl.org" "#sao-paulo.pm" "#rio-pm")))
+
+(erc :server "irc.freenode.net" :port "6667" :nick ircnick)
+(erc :server "irc.freenode.net" :port "6667" :nick ircnick)
 
 (setq erc-current-nick-highlight-type 'nick)
 ;; (setq erc-keywords '("regex"))

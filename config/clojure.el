@@ -1,6 +1,7 @@
+(require 'clojure-mode)
 (require 'nrepl)
 
-;;(setq nrepl-lein-command "/usr/local/bin/lein")
+(setq nrepl-lein-command "/usr/local/bin/lein")
 
 (add-hook 'nrepl-interaction-mode-hook
   'nrepl-turn-on-eldoc-mode)
@@ -8,3 +9,5 @@
 (setq nrepl-popup-stacktraces nil)
 
 (add-to-list 'same-window-buffer-names "*nrepl*")
+
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)

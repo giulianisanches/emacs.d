@@ -62,8 +62,13 @@
   :prefix "nrepl-"
   :group 'applications)
 
-(defvar nrepl-version "0.1.6-preview"
+(defvar nrepl-current-version "0.1.6-preview"
   "The current nrepl version.")
+
+(defun nrepl-version ()
+  "Reports the version of nrepl in use."
+  (interactive)
+  (message "Currently using nREPL version %s" nrepl-current-version))
 
 (defcustom nrepl-connected-hook nil
   "List of functions to call when connecting to the nREPL server."
@@ -155,7 +160,7 @@ joined together.")
 (defvar nrepl-output-start nil
   "Marker for the start of output.")
 
-(defvar nrepl-output-end
+(defvar nrepl-output-end nil
   "Marker for the end of output.")
 
 (defvar nrepl-sync-response nil
@@ -797,7 +802,6 @@ in a macroexpansion buffer. Prefix argument forces pretty-printed output."
   (let ((buffer (current-buffer)))
     (nrepl-send-request (list "op" "load-file"
                               "session" (nrepl-current-session)
-                              "ns" nrepl-buffer-ns
                               "file" file-contents
                               "file-path" file-path
                               "file-name" file-name)
@@ -844,6 +848,7 @@ Empty strings and duplicates are ignored."
 (defun nrepl-delete-current-input ()
   "Delete all text after the prompt."
   (interactive)
+  (goto-char (point-max))
   (delete-region nrepl-input-start-mark (point-max)))
 
 (defun nrepl-replace-input (string)
@@ -1032,13 +1037,25 @@ This function is meant to be used in hooks to avoid lambda
    (save-excursion (goto-char (min pos1 pos2))
                    (<= (max pos1 pos2) (line-end-position))))
 
-(defun nrepl-bol ()
+(defun nrepl-bol-internal ()
   "Go to the beginning of line or the prompt."
-  (interactive)
   (cond ((and (>= (point) nrepl-input-start-mark)
               (nrepl-same-line-p (point) nrepl-input-start-mark))
          (goto-char nrepl-input-start-mark))
         (t (beginning-of-line 1))))
+
+(defun nrepl-bol ()
+  "Go to the beginning of line or the prompt."
+  (interactive)
+  (deactivate-mark)
+  (nrepl-bol-internal))
+
+(defun nrepl-bol-mark ()
+  "Set the mark and go to the beginning of line or the prompt."
+  (interactive)
+  (unless mark-active
+    (set-mark (point)))
+  (nrepl-bol-internal))
 
 (defun nrepl-at-prompt-start-p ()
   ;; This will not work on non-current prompts.
@@ -1104,8 +1121,10 @@ This function is meant to be used in hooks to avoid lambda
     (define-key map (kbd "C-c C-o") 'nrepl-clear-output)
     (define-key map (kbd "C-c M-o") 'nrepl-clear-buffer)
     (define-key map (kbd "C-c C-u") 'nrepl-kill-input)
-    (define-key map "\C-a" 'nrepl-bol)
+    (define-key map (kbd "C-a") 'nrepl-bol)
+    (define-key map (kbd "C-S-a") 'nrepl-bol-mark)
     (define-key map [home] 'nrepl-bol)
+    (define-key map [S-home] 'nrepl-bol-mark)
     (define-key map (kbd "C-<up>") 'nrepl-backward-input)
     (define-key map (kbd "C-<down>") 'nrepl-forward-input)
     (define-key map (kbd "M-p") 'nrepl-previous-input)
@@ -1670,7 +1689,7 @@ text property `nrepl-old-input'."
 
 (defun nrepl-insert-banner (ns)
   (when (zerop (buffer-size))
-    (let ((welcome (concat "; nREPL " nrepl-version)))
+    (let ((welcome (concat "; nREPL " nrepl-current-version)))
       (insert welcome)))
   (goto-char (point-max))
   (nrepl-mark-output-start)
@@ -1876,12 +1895,18 @@ under point, prompts for a var."
   (let* ((b (process-buffer process))
          (problem (if (and b (buffer-live-p b))
                       (with-current-buffer b
-                        (buffer-substring (point-min) (point-max))))))
+                        (buffer-substring (point-min) (point-max)))
+                    "")))
     (when b
       (kill-buffer b))
-    (if (string-match "Wrong number of arguments to repl task." problem)
-        (error "nrepl.el requires Leiningen 2.x")
-      (error "Could not start nREPL server: %s" problem))))
+    (cond
+     ((string-match "^killed" event)
+      nil)
+     ((string-match "^hangup" event)
+      (nrepl-quit))
+     ((string-match "Wrong number of arguments to repl task" problem)
+      (error "nrepl.el requires Leiningen 2.x"))
+     (t (error "Could not start nREPL server: %s" problem)))))
 
 ;;;###autoload
 (defun nrepl-enable-on-existing-clojure-buffers ()

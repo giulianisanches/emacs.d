@@ -1190,7 +1190,7 @@ The arguments are dir, hostname, and port.  The return value should be an `alist
 
 ;; Test navigation:
 (defun clojure-in-tests-p ()
-  (or (string-match-p "-test$" (clojure-find-ns))
+  (or (string-match-p "test\." (clojure-find-ns))
       (string-match-p "/test" (buffer-file-name))))
 
 (defun clojure-underscores-for-hyphens (namespace)
@@ -1201,9 +1201,9 @@ The arguments are dir, hostname, and port.  The return value should be an `alist
          (segments (split-string namespace "\\."))
          (before (subseq segments 0 clojure-test-ns-segment-position))
          (after (subseq segments clojure-test-ns-segment-position))
-	 (newfile (format "%s_test" (car after)))
+	 (newfile (car after))
          (test-segments (append before (list newfile))))
-    (mapconcat 'identity test-segments "/")))
+    (mapconcat 'identity test-segments "/test/")))
 
 (defun clojure-jump-to-test ()
   "Jump from implementation file to test."

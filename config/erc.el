@@ -7,7 +7,7 @@
         ("irc.perl.org" "#sao-paulo.pm" "#rio-pm")))
 
 (erc :server "irc.freenode.net" :port "6667" :nick ircnick)
-(erc :server "irc.freenode.net" :port "6667" :nick ircnick)
+(erc :server "irc.perl.org" :port "6667" :nick ircnick)
 
 (setq erc-current-nick-highlight-type 'nick)
 ;; (setq erc-keywords '("regex"))

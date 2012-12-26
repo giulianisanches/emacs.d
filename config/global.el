@@ -8,7 +8,8 @@
 (setq scroll-step 1)
 (setq major-mode 'text-mode)
 (setq kill-whole-line t)
-(setq truncate-lines t)
+(setq default-truncate-lines t)
+(setq truncate-partial-width-windows nil)
 
 (if (eq system-type 'windows-nt)
     (set-face-attribute 'default nil :font "Consolas-11"))

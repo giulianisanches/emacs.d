@@ -200,7 +200,7 @@ criterious when skipping.")
 The alist contains single (t MAP) association, where MAP is a
 dynamic keymap set mostly from the major mode's syntax table.")
 
-(unless (> emacs-major-version 23)
+(unless (eval-when-compile (> emacs-major-version 23))
   (defvar autopair-dont-activate nil
     "Control activation of `autopair-global-mode'.
 
@@ -331,9 +331,30 @@ For now, simply returns `last-command-event'"
 
 ;; minor mode and global mode
 ;;
+;;;###autoload
+(define-minor-mode autopair-mode
+  "Automagically pair braces and quotes like in TextMate."
+  nil " pair" nil
+  (cond (autopair-mode
+         ;; Setup the dynamic emulation keymap, i.e. sets `autopair-emulation-alist'
+         ;;
+         (autopair-set-emulation-bindings)
+         (add-to-list 'emulation-mode-map-alists 'autopair-emulation-alist 'append)
+         ;; Init important vars
+         ;;
+         (setq autopair-action nil)
+         (setq autopair-wrap-action nil)
+         ;; Add the post command handler
+         ;;
+         (add-hook 'post-command-hook 'autopair-post-command-handler nil 'local))
+        (t
+         (set (make-local-variable 'autopair-emulation-alist) nil)
+         (remove-hook 'post-command-hook         'autopair-post-command-handler 'local))))
+
+;;;###autoload
 (define-globalized-minor-mode autopair-global-mode autopair-mode autopair-on)
 
-(when (>= emacs-major-version 24)
+(when (eval-when-compile (>= emacs-major-version 24))
   (defvar autopair-global-mode-emacs24-hack-flag nil)
   (defadvice autopair-global-mode-enable-in-buffers (before autopairs-global-mode-emacs24-hack activate)
     "Monkey patch for recent emacsen 24.
@@ -364,29 +385,10 @@ We want this advice to only kick in the *second* call to
               (and (not (minibufferp))
                    (string-match "^ \\*" (buffer-name)))
               (eq major-mode 'sldb-mode)
-              (and (< emacs-major-version 24)
+              (and (eval-when-compile (< emacs-major-version 24))
                    (boundp 'autopair-dont-activate)
                    autopair-dont-activate)
     (autopair-mode 1))))
-
-(define-minor-mode autopair-mode
-  "Automagically pair braces and quotes like in TextMate."
-  nil " pair" nil
-  (cond (autopair-mode
-         ;; Setup the dynamic emulation keymap, i.e. sets `autopair-emulation-alist'
-         ;;
-         (autopair-set-emulation-bindings)
-         (add-to-list 'emulation-mode-map-alists 'autopair-emulation-alist 'append)
-         ;; Init important vars
-         ;;
-         (setq autopair-action nil)
-         (setq autopair-wrap-action nil)
-         ;; Add the post command handler
-         ;;
-         (add-hook 'post-command-hook 'autopair-post-command-handler nil 'local))
-        (t
-         (set (make-local-variable 'autopair-emulation-alist) nil)
-         (remove-hook 'post-command-hook         'autopair-post-command-handler 'local))))
 
 (defun autopair-set-emulation-bindings ()
   "Setup keymap MAP with keybindings based on the major-mode's
@@ -409,7 +411,8 @@ syntax table and the local value of `autopair-extra-pairs'."
                            (syntax-class syntax-entry)))
                (pair (and syntax-entry
                           (cdr syntax-entry))))
-          (cond ((eq class (car (string-to-syntax "(")))
+          (cond ((and (eq class (car (string-to-syntax "(")))
+                      pair)
                  ;; syntax classes "opening parens" and "close parens"
                  (define-key map (string char) 'autopair-insert-opening)
                  (define-key map (string pair) 'autopair-skip-close-maybe))
@@ -668,9 +671,10 @@ returned) and uplisting stops there."
              (condition-case err
                  (progn (save-excursion (up-list)) nil)
                (error
-                (autopair-in-unterminated-string-p (save-excursion
-                                                     (goto-char (fourth err))
-                                                     (autopair-syntax-ppss)))))
+                (and (fourth err) ;; fix #3
+                     (autopair-in-unterminated-string-p (save-excursion
+                                                          (goto-char (fourth err))
+                                                          (autopair-syntax-ppss))))))
              (autopair-in-unterminated-string-p (save-excursion
                                                   (goto-char (point-max))
                                                   (autopair-syntax-ppss)))
@@ -834,7 +838,7 @@ by this command. Then place point after the first, indented.\n\n"
                ((eq autopair-pair-criteria 'always)
                 t)
                (t
-                (not (autopair-escaped-p)))))))
+                (not (autopair-escaped-p syntax-info)))))))
 
 ;; post-command-hook stuff
 ;;
@@ -1128,5 +1132,11 @@ by this command. Then place point after the first, indented.\n\n"
                     (unintern sym))))))
 
 (provide 'autopair)
+
+
+;; Local Variables:
+;; coding: utf-8
+;; byte-compile-warnings: (not cl-functions)
+;; End:
+
 ;;; autopair.el ends here
-;;

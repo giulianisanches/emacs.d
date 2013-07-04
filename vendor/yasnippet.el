@@ -110,9 +110,9 @@
 ;;           are to be displayed, or all the tables for all major
 ;;           modes.
 ;;
-;;   The `dropdown-list.el' extension is bundled with YASnippet, you
-;;   can optionally use it the preferred "prompting method", putting in
-;;   your .emacs file, for example:
+;;   If you have `dropdown-list' installed, you can optionally use it
+;;   as the preferred "prompting method", putting in your .emacs file,
+;;   for example:
 ;;
 ;;       (require 'dropdown-list)
 ;;       (setq yas-prompt-functions '(yas-dropdown-prompt
@@ -136,7 +136,6 @@
 (require 'cl)
 (require 'easymenu)
 (require 'help-mode)
-(require 'assoc)
 
 (eval-when-compile
   (defvar yas--editing-template)
@@ -312,8 +311,9 @@ Any other non-nil value, every submenu is listed."
                  (const :tag "No menu" nil))
   :group 'yasnippet)
 
-(defcustom yas-trigger-symbol (if (eq window-system 'mac)
-                                  (char-to-string ?\x21E5) ;; little ->| sign
+(defcustom yas-trigger-symbol (or (and (eq window-system 'mac)
+                                       (ignore-errors
+                                         (char-to-string ?\x21E5))) ;; little ->| sign
                                   " =>")
   "The text that will be used in menu to represent the trigger."
   :type 'string
@@ -415,7 +415,8 @@ Attention: These hooks are not run when exiting nested/stacked snippet expansion
 (defvar yas-buffer-local-condition
   '(if (and (or (fourth (syntax-ppss))
                 (fifth (syntax-ppss)))
-            (eq (symbol-function this-command) 'yas-expand-from-trigger-key))
+	    this-command
+            (eq this-command 'yas-expand-from-trigger-key))
        '(require-snippet-condition . force-in-comment)
      t)
   "Snippet expanding condition.
@@ -474,7 +475,7 @@ snippet itself contains a condition that returns the symbol
 
 ;;; Internal variables
 
-(defvar yas--version "0.8.0 (beta)")
+(defvar yas--version "0.8.0beta")
 
 (defvar yas--menu-table (make-hash-table)
   "A hash table of MAJOR-MODE symbols to menu keymaps.")
@@ -659,6 +660,11 @@ There might be additional parenting information stored in the
 `derived-mode-parent' property of some mode symbols, but that is
 not recorded here.")
 
+(defvar yas--ancestors (make-hash-table)
+  "A hash table of mode symbols do lists of all parent mode symbols.
+
+A cache managed by `yas--all-parents'")
+
 (defvar yas--direct-keymaps (list)
   "Keymap alist supporting direct snippet keybindings.
 
@@ -743,17 +749,26 @@ Key bindings:
          (remove-hook 'emulation-mode-map-alists 'yas--direct-keymaps))))
 
 (defvar yas-dont-activate '(minibufferp)
-  "If non-nil don't let `yas-minor-mode-on' activate for this buffer.
+  "If non-nil don't let `yas-global-mode' affect some buffers.
 
-If a function, then its result is used.
+If a function of zero arguments, then its result is used.
 
 If a list of functions, then all functions must return nil to
 activate yas for this buffer.
 
-`yas-minor-mode-on' is usually called by `yas-global-mode' so
-this effectively lets you define exceptions to the \"global\"
-behaviour. Can also be a function of zero arguments.")
-(make-variable-buffer-local 'yas-dont-activate)
+In Emacsen <= 23, this variable is buffer-local. Because
+`yas-minor-mode-on' is called by `yas-global-mode' after
+executing the buffer's major mode hook, setting this variable
+there is an effective way to define exceptions to the \"global\"
+activation behaviour.
+
+In Emacsen > 23, only the global value is used. To define
+per-mode exceptions to the \"global\" activation behaviour, call
+`yas-minor-mode' with a negative argument directily in the major
+mode's hook.")
+(unless (> emacs-major-version 23)
+  (make-variable-buffer-local 'yas-dont-activate))
+
 
 (defun yas-minor-mode-on ()
   "Turn on YASnippet minor mode.
@@ -1141,9 +1156,21 @@ conditions to filter out potential expansions."
 
 (defun yas--all-parents (mode)
   "Returns a list of all parent modes of MODE."
-  (let ((parents (gethash mode yas--parents)))
-    (append parents
-            (mapcan #'yas--all-parents parents))))
+  (or (gethash mode yas--ancestors)
+      (let ((seen '()))
+        (labels ((yas--all-parents-1
+                  (m)
+                  (cond ((memq m seen)
+                         (yas--message 1
+                                       "Cyclic parenthood: mode %s has already seen as a parent of mode %s"
+                                       m mode)
+                         nil)
+                        (t
+                         (let* ((parents (gethash m yas--parents)))
+                           (setq seen (append seen parents))
+                           (append parents (mapcan #'yas--all-parents-1 parents)))))))
+          (puthash mode (yas--all-parents-1 mode)
+                   yas--ancestors)))))
 
 (defun yas--table-templates (table)
   (when table
@@ -1311,7 +1338,7 @@ them all in `yas--menu-table'"
 
 Optional KIND is as documented at `called-interactively-p'
 in GNU Emacs 24.1 or higher."
-  (if (eq 0 (cdr (subr-arity (symbol-function 'called-interactively-p))))
+  (if (string< emacs-version "24.1")
       '(called-interactively-p)
     `(called-interactively-p ,kind)))
 
@@ -1596,7 +1623,7 @@ Optional PROMPT sets the prompt to use."
 		 ido-mode))
     (yas-completing-prompt prompt choices display-fn #'ido-completing-read)))
 
-(eval-when-compile (require 'dropdown-list nil t))
+(declare-function dropdown-list "dropdown-list")
 (defun yas-dropdown-prompt (prompt choices &optional display-fn)
   (when (featurep 'dropdown-list)
     (let (formatted-choices
@@ -1852,20 +1879,25 @@ loading."
             ;; `yas--editing-template' to nil, make it guess it next time around
             (mapc #'(lambda (buffer) (setq yas--editing-template nil)) (buffer-list))))
 
-      ;; Empty all snippet tables, parenting info and all menu tables
+      ;; Empty all snippet tables and parenting info
       ;;
       (setq yas--tables (make-hash-table))
       (setq yas--parents (make-hash-table))
+      (setq yas--ancestors (make-hash-table))
+
+      ;; Before killing `yas--menu-table' use its keys to cleanup the
+      ;; mode menu parts of `yas--minor-mode-menu' (thus also cleaning
+      ;; up `yas-minor-mode-map', which points to it)
+      ;;
+      (maphash #'(lambda (menu-symbol keymap)
+                   (define-key yas--minor-mode-menu (vector menu-symbol) nil))
+               yas--menu-table)
+      ;; Now empty `yas--menu-table' as well
       (setq yas--menu-table (make-hash-table))
 
       ;; Cancel all pending 'yas--scheduled-jit-loads'
       ;;
       (setq yas--scheduled-jit-loads (make-hash-table))
-
-      ;; Init the `yas-minor-mode-map', taking care not to break the
-      ;; menu....
-      ;;
-      (setcdr yas-minor-mode-map (cdr (yas--init-minor-keymap)))
 
       ;; Reload the directories listed in `yas-snippet-dirs' or prompt
       ;; the user to select one.
@@ -2302,7 +2334,7 @@ vector of keys. FIXME not thoroughly tested"
         (while (and (< j (length keys))
                     translated
                     (keymapp translated))
-          (setq translated (aget (remove 'keymap translated) (aref keys j))
+          (setq translated (cdr (assoc (aref keys j) (remove 'keymap translated)))
                 j (1+ j)))
         (setq retval (vconcat retval (cond ((symbolp translated)
                                             `[,translated])
@@ -2517,7 +2549,7 @@ neither do the elements of PARENTS."
                                     (buffer-substring-no-properties (point-min)
                                                                     (point-max))))))))
     (when major-mode-sym
-      (cons major-mode-sym parents))))
+      (cons major-mode-sym (remove major-mode-sym parents)))))
 
 (defvar yas--editing-template nil
   "Supporting variable for `yas-load-snippet-buffer' and `yas--visit-snippet'.")
@@ -2644,8 +2676,9 @@ whether (and where) to save the snippet, then quit the window."
 
 (defun yas-active-keys ()
   "Return all active trigger keys for current buffer and point."
-  (remove-duplicates (mapcan #'yas--table-all-keys (yas--get-snippet-tables))
-                     :test #'string=))
+  (remove-duplicates
+   (remove-if-not #'stringp (mapcan #'yas--table-all-keys (yas--get-snippet-tables)))
+   :test #'string=))
 
 (defun yas--template-fine-group (template)
   (car (last (or (yas--template-group template)
@@ -2894,7 +2927,16 @@ Use this in primary and mirror transformations to tget."
   force-exit)
 
 (defstruct (yas--field (:constructor yas--make-field (number start end parent-field)))
-  "A field."
+  "A field.
+
+NUMBER is the field number.
+START and END are mostly buffer markers, but see \"apropos markers-to-points\".
+PARENT-FIELD is a `yas--field' this field is nested under, or nil.
+MIRRORS is a list of `yas--mirror's
+TRANSFORM is a lisp form.
+MODIFIED-P is a boolean set to true once user inputs text.
+NEXT is another `yas--field' or `yas--mirror' or `yas--exit'.
+"
   number
   start end
   parent-field
@@ -2903,12 +2945,20 @@ Use this in primary and mirror transformations to tget."
   (modified-p nil)
   next)
 
+
 (defstruct (yas--mirror (:constructor yas--make-mirror (start end transform)))
-  "A mirror."
+  "A mirror.
+
+START and END are mostly buffer markers, but see \"apropos markers-to-points\".
+TRANSFORM is a lisp form.
+PARENT-FIELD is a `yas--field' this mirror is nested under, or nil.
+NEXT is another `yas--field' or `yas--mirror' or `yas--exit'
+DEPTH is a count of how many nested mirrors can affect this mirror"
   start end
   (transform nil)
   parent-field
-  next)
+  next
+  depth)
 
 (defstruct (yas--exit (:constructor yas--make-exit (marker)))
   marker
@@ -4140,6 +4190,26 @@ When multiple expressions are found, only the last one counts."
               #'(lambda (r1 r2)
                   (>= (car r1) (car r2))))))
 
+(defun yas--calculate-mirror-depth (mirror &optional traversed)
+  (let* ((parent (yas--mirror-parent-field mirror))
+         (parents-mirrors (and parent
+                               (yas--field-mirrors parent))))
+    (or (yas--mirror-depth mirror)
+        (setf (yas--mirror-depth mirror)
+              (cond ((memq mirror traversed)
+                     0)
+                    ((and parent parents-mirrors)
+                     (1+ (reduce #'max
+                                 (mapcar #'(lambda (m)
+                                             (yas--calculate-mirror-depth m
+                                                                          (cons mirror
+                                                                                traversed)))
+                                         parents-mirrors))))
+                    (parent
+                     1)
+                    (t
+                     0))))))
+
 (defun yas--update-mirrors (snippet)
   "Updates all the mirrors of SNIPPET."
   (save-excursion
@@ -4158,7 +4228,8 @@ When multiple expressions are found, only the last one counts."
                                ;; another mirror to need reupdating
                                ;;
                                #'(lambda (field-and-mirror1 field-and-mirror2)
-                                   (yas--mirror-parent-field (cdr field-and-mirror1)))))
+                                   (> (yas--calculate-mirror-depth (cdr field-and-mirror1))
+                                      (yas--calculate-mirror-depth (cdr field-and-mirror2))))))
       (let* ((field (car field-and-mirror))
              (mirror (cdr field-and-mirror))
              (parent-field (yas--mirror-parent-field mirror)))
@@ -4338,7 +4409,7 @@ Remaining args as in `yas-expand-snippet'."
 (defun yas--message (level message &rest args)
   "When LEVEL is above `yas-verbosity-level', log MESSAGE and ARGS."
   (when (> yas-verbosity level)
-    (message (apply #'yas--format message args))))
+    (message "%s" (apply #'yas--format message args))))
 
 (defun yas--format (format-control &rest format-args)
   (apply #'format (concat "[yas] " format-control) format-args))

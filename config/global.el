@@ -50,7 +50,6 @@
 
 (require 'paredit)
 (require 'org)
-(require 'trac-wiki)
 
 (require 'exec-path-from-shell)
 (exec-path-from-shell-initialize)

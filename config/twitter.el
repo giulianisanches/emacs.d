@@ -9,7 +9,10 @@
       '(":home" ":replies" ":direct_messages")
       twittering-status-format "%s (%S)\n%FILL[ ]{%T}\n %FACE[glyphless-char]{%@ from %f%L%r%R}\n")
 
-(set-face-attribute 'twittering-username-face nil :underline nil)
+
+(add-hook 'twittering-mode-hook
+          (lambda ()
+            (set-face-attribute 'twittering-username-face nil :underline nil)))
 
 ;;(setq twittering-tinyurl-service 'bit.ly)
 ;;(setq twittering-bitly-login "YOURbitlyUsername")

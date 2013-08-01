@@ -30,7 +30,5 @@
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
     (load "config/erc"))
 
-(load "vendor/nxhtml/autostart.el")
-
 (setq custom-file "~/.emacs.d/config/custom.el")
 (load custom-file)

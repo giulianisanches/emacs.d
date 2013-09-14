@@ -75,10 +75,10 @@
 (require 'org)
 
 (load "config/indentation")
+(load "config/theme")
 (load "config/hooks")
 (load "config/defuns")
 (load "config/keymaps")
-(load "config/theme")
 (load "config/projects")
 (load "config/python")
 (load "config/recentf")

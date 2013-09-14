@@ -2,7 +2,7 @@
       '((top . 0) (left . 250)
         (width . 80) (height . 36)))
 
-(setq inhibit-startup-message t)
+
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)
 (setq scroll-step 1)
@@ -26,12 +26,12 @@
 (line-number-mode 1)
 (column-number-mode 1)
 
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-
 (show-paren-mode 1)
 (setq show-paren-delay 0)
+
+(when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
 
 (require 'autopair)
 (autopair-global-mode)
@@ -50,6 +50,3 @@
 
 (require 'paredit)
 (require 'org)
-
-(require 'exec-path-from-shell)
-(exec-path-from-shell-initialize)

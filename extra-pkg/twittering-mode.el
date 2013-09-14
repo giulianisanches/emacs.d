@@ -4785,9 +4785,7 @@ string and the number of new statuses for the timeline."
 		      (twittering-render-timeline
 		       buffer twittering-new-tweets-statuses t)))
 		(when rendered-tweets
-		  (when (not (equal spec other-spec))
-		    ;; The hook has been alreadly invoked for `spec'.
-		    (run-hooks 'twittering-new-tweets-hook))
+		  (run-hooks 'twittering-new-tweets-hook)
 		  `(,other-spec-string ,(length rendered-tweets)))))))
 	(twittering-get-buffer-list))))))
 

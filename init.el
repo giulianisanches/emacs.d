@@ -9,7 +9,6 @@
 
 (setq inhibit-startup-message t)
 
-
 (setq default-frame-alist
       '((top . 0) (left . 250)
         (width . 80) (height . 36)))
@@ -50,9 +49,7 @@
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (add-to-list 'exec-path "/usr/local/bin")
-  (add-to-list 'exec-path "/usr/local/share/python"))
-
-(when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
+  (add-to-list 'exec-path "/usr/local/share/python")
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
 

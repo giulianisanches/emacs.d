@@ -47,6 +47,17 @@
 (add-to-list 'load-path "~/.emacs.d")
 (add-to-list 'load-path "~/.emacs.d/extra-pkg")
 
+;; The code below will install all the extensions that do not exist in the
+;; directory extra-pkg
+(mapc
+ (lambda (package)
+   (or (package-installed-p package)
+       (package-install package)))
+ '(apache-mode autopair clojure-test-mode cperl-mode eproject
+               exec-path-from-shell markdown-mode nrepl clojure-mode paredit
+               pkg-info twittering-mode virtualenv virtualenvwrapper s dash
+               web-mode yasnippet zenburn-theme))
+
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (add-to-list 'exec-path "/usr/local/bin")
   (add-to-list 'exec-path "/usr/local/share/python")

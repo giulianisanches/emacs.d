@@ -49,14 +49,18 @@
 
 ;; The code below will install all the extensions that do not exist in the
 ;; directory extra-pkg
-(mapc
- (lambda (package)
-   (or (package-installed-p package)
-       (package-install package)))
- '(apache-mode autopair clojure-test-mode cperl-mode eproject
+(when (not package-archive-contents)
+  (package-refresh-contents))
+
+(setq required-packages
+      '(apache-mode autopair clojure-test-mode cperl-mode eproject
                exec-path-from-shell markdown-mode nrepl clojure-mode paredit
                pkg-info twittering-mode virtualenv virtualenvwrapper s dash
                web-mode yasnippet zenburn-theme))
+
+(dolist (package required-packages)
+  (if (not (package-installed-p package))
+      (package-install package)))
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (add-to-list 'exec-path "/usr/local/bin")

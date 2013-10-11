@@ -55,7 +55,7 @@
 (setq required-packages
       '(apache-mode autopair clojure-test-mode cperl-mode eproject
                exec-path-from-shell markdown-mode nrepl clojure-mode paredit
-               pkg-info twittering-mode virtualenv virtualenvwrapper s dash
+               pkg-info twittering-mode lua-mode s dash
                web-mode yasnippet zenburn-theme))
 
 (dolist (package required-packages)
@@ -92,7 +92,6 @@
 (load "config/defuns")
 (load "config/keymaps")
 (load "config/projects")
-(load "config/python")
 (load "config/recentf")
 (load "config/twitter")
 (load "config/tramp")

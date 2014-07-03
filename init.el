@@ -55,8 +55,8 @@
 (setq required-packages
       '(apache-mode autopair clojure-test-mode cperl-mode eproject
                exec-path-from-shell markdown-mode nrepl clojure-mode paredit
-               pkg-info twittering-mode lua-mode s dash
-               web-mode yasnippet zenburn-theme))
+               pkg-info twittering-mode ecb s dash
+               web-mode yasnippet color-theme-solarized))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))

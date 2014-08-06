@@ -3,8 +3,7 @@
 (load "~/.emacs.d/config/erc-auth.el")
 
 (setq erc-autojoin-channels-alist
-      '((".*\\.freenode.net" "#clojure" "#clojure-br" "#lisp")
-        ("irc.perl.org" "#sao-paulo.pm" "#rio-pm")))
+      '((".*\\.freenode.net" "#clojure" "#clojure-br" "#lisp" "lisp-br" "clnoobs")))
 
 ;;(erc :server "irc.freenode.net" :port "6667" :nick ircnick)
 ;;(erc :server "irc.perl.org" :port "6667" :nick ircnick)

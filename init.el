@@ -40,8 +40,8 @@
 (setq show-paren-delay 0)
 
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages")
+                         ("marmelade" . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
 (add-to-list 'load-path "~/.emacs.d")
@@ -53,10 +53,22 @@
   (package-refresh-contents))
 
 (setq required-packages
-      '(apache-mode autopair clojure-test-mode cperl-mode eproject
-               exec-path-from-shell markdown-mode nrepl clojure-mode paredit
-               pkg-info twittering-mode ecb s dash
-               web-mode yasnippet color-theme-solarized))
+      '(autopair
+        cider
+        cperl-mode
+        python-mode
+        eproject
+        exec-path-from-shell
+        markdown-mode
+        clojure-mode
+        dash
+        paredit
+        pkg-info
+        twittering-mode
+        ecb
+        web-mode
+        yasnippet
+        color-theme-solarized))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))
@@ -98,6 +110,7 @@
 (load "config/clojure")
 (load "config/perl")
 (load "config/markdown")
+(load "config/lisp")
 
 ;; i do not have plans to use erc on windows for a while
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))

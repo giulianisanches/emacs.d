@@ -40,7 +40,7 @@
 (setq show-paren-delay 0)
 
 (require 'package)
-(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages")
+(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
                          ("marmelade" . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
@@ -54,13 +54,11 @@
 
 (setq required-packages
       '(autopair
-        cider
         cperl-mode
         python-mode
         eproject
         exec-path-from-shell
         markdown-mode
-        clojure-mode
         dash
         paredit
         pkg-info
@@ -107,10 +105,8 @@
 (load "config/recentf")
 (load "config/twitter")
 (load "config/tramp")
-(load "config/clojure")
 (load "config/perl")
 (load "config/markdown")
-(load "config/lisp")
 
 ;; i do not have plans to use erc on windows for a while
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))

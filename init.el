@@ -55,7 +55,7 @@
 (setq required-packages
       '(autopair
         cperl-mode
-        python-mode
+        python-mode jedi ipython python-environment
         eproject
         exec-path-from-shell
         markdown-mode
@@ -107,6 +107,7 @@
 (load "config/tramp")
 (load "config/perl")
 (load "config/markdown")
+(load "config/python")
 
 ;; i do not have plans to use erc on windows for a while
 (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))

@@ -10,6 +10,3 @@
 
 ;; See config/defuns.el for details
 (global-set-key (kbd "M-;") 'comment-dwin-line)
-
-;; Use ctrl tab to change buffer.
-(global-set-key [C-tab] 'buffer-menu)

@@ -44,7 +44,7 @@
                          ("marmelade" . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
-(add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path "~/.emacs.d/lisp")
 (add-to-list 'load-path "~/.emacs.d/extra-pkg")
 
 ;; The code below will install all the extensions that do not exist in the
@@ -54,8 +54,9 @@
 
 (setq required-packages
       '(autopair
+        s
         cperl-mode
-        python-mode jedi ipython python-environment
+        jedi python-environment
         eproject
         exec-path-from-shell
         markdown-mode
@@ -71,6 +72,9 @@
 (dolist (package required-packages)
   (if (not (package-installed-p package))
       (package-install package)))
+
+(setq custom-file "~/.emacs.d/lisp/config/custom.el")
+(load custom-file)
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (add-to-list 'exec-path "/usr/local/bin")
@@ -96,6 +100,7 @@
 (require 'paredit)
 (require 'org)
 
+
 (load "config/indentation")
 (load "config/theme")
 (load "config/hooks")
@@ -109,9 +114,5 @@
 (load "config/markdown")
 (load "config/python")
 
-;; i do not have plans to use erc on windows for a while
-(if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
-    (load "config/erc"))
-
-(setq custom-file "~/.emacs.d/config/custom.el")
-(load custom-file)
+;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
+;;     (load "erc"))

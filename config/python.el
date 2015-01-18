@@ -13,4 +13,5 @@
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-hook 'python-mode-hook 'jedi:ac-setup)
 
-(setq jedi:key-complete (kbd "C-A-SPC"))
+(setq jedi:setup-keys t)
+(setq jedi:key-complete (kbd "C-S-!"))

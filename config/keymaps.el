@@ -10,3 +10,4 @@
 
 ;; See config/defuns.el for details
 (global-set-key (kbd "M-;") 'comment-dwin-line)
+(global-set-key (kbd "<C-tab>") 'buffer-menu)

@@ -10,8 +10,7 @@
 (setq inhibit-startup-message t)
 
 (setq default-frame-alist
-      '((top . 0) (left . 250)
-        (width . 80) (height . 36)))
+      '((width . 80) (height . 60)))
 
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)

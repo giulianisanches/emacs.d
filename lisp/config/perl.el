@@ -27,7 +27,8 @@
 
 (add-to-list 'auto-mode-alist '("\\.t$" . cperl-mode))
 
-(setq cperl-close-paren-offset -4
+(setq cperl-indent-level 4
+      cperl-close-paren-offset -4
       cperl-continued-statement-offset 4
       cperl-indent-parens-as-block t
       cperl-tab-always-indent nil)

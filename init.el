@@ -10,7 +10,7 @@
 (setq inhibit-startup-message t)
 
 (setq default-frame-alist
-      '((width . 80) (height . 60)))
+      '((width . 80) (height . 50)))
 
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)
@@ -55,7 +55,6 @@
       '(autopair
         s
         cperl-mode
-        jedi python-environment
         eproject
         exec-path-from-shell
         markdown-mode
@@ -77,7 +76,6 @@
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (add-to-list 'exec-path "/usr/local/bin")
-  (add-to-list 'exec-path "/usr/local/share/python")
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
 
@@ -87,9 +85,10 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-(require 'iswitchb)
-(iswitchb-mode 1)
-(add-to-list 'iswitchb-buffer-ignore "^\\*")
+(require 'ido)
+(ido-mode 'buffers) ;; only use this line to turn off ido for file names!
+;; (setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
+;;                            "*Messages*" "Async Shell Command"))
 
 (require 'uniquify)
 
@@ -115,3 +114,4 @@
 
 ;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
 ;;     (load "erc"))
+(put 'downcase-region 'disabled nil)

@@ -43,8 +43,8 @@
                          ("marmelade" . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 
-(add-to-list 'load-path "~/.emacs.d/lisp")
-(add-to-list 'load-path "~/.emacs.d/extra-pkg")
+(add-to-list 'load-path "~/.emacs.d/config")
+(add-to-list 'load-path "~/.emacs.d/extra")
 
 ;; The code below will install all the extensions that do not exist in the
 ;; directory extra-pkg
@@ -115,3 +115,4 @@
 ;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
 ;;     (load "erc"))
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)

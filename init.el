@@ -114,6 +114,7 @@
 (load "custom/perl")
 (load "custom/markdown")
 (load "custom/python")
+(load "custom/go")
 
 ;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
 ;;     (load "erc"))

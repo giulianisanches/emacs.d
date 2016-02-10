@@ -10,7 +10,7 @@
 (setq inhibit-startup-message t)
 
 (setq default-frame-alist
-      '((width . 80) (height . 50)))
+      '((width . 80) (height . 40)))
 
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)
@@ -87,7 +87,8 @@
 (yas-global-mode 1)
 
 (require 'ido)
-(ido-mode 'buffers) ;; only use this line to turn off ido for file names!
+(ido-mode t)
+;; (ido-mode 'buffers)
 ;; (setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
 ;;                            "*Messages*" "Async Shell Command"))
 

@@ -55,23 +55,24 @@
       '(autopair
         s
         cperl-mode
-        eproject
+        projectile
         exec-path-from-shell
         markdown-mode
         dash
         paredit
         pkg-info
         twittering-mode
-        ecb
         web-mode
         yasnippet
+        go-mode
+        flx-ido
         color-theme-solarized))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))
       (package-install package)))
 
-(setq custom-file "~/.emacs.d/config/emacs/custom.el")
+(setq custom-file "~/.emacs.d/config/custom/custom.el")
 (load custom-file)
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
@@ -101,17 +102,17 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-(load "emacs/indentation")
-(load "emacs/theme")
-(load "emacs/hooks")
-(load "emacs/keymaps")
-(load "emacs/projects")
-(load "emacs/recentf")
-(load "emacs/twitter")
-(load "emacs/tramp")
-(load "emacs/perl")
-(load "emacs/markdown")
-(load "emacs/python")
+(load "custom/indentation")
+(load "custom/theme")
+(load "custom/hook")
+(load "custom/keymap")
+(load "custom/project")
+(load "custom/recentf")
+(load "custom/twitter")
+(load "custom/tramp")
+(load "custom/perl")
+(load "custom/markdown")
+(load "custom/python")
 
 ;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
 ;;     (load "erc"))

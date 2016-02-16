@@ -20,8 +20,9 @@
 (setq default-truncate-lines t)
 (setq truncate-partial-width-windows nil)
 
-(if (eq system-type 'windows-nt)
-    (set-face-attribute 'default nil :font "Consolas-11"))
+(when (eq system-type 'windows-nt)
+  (set-face-attribute 'default nil :font "Consolas-11")
+  (server-start))
 
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
@@ -48,7 +49,7 @@
 
 ;; The code below will install all the extensions that do not exist in the
 ;; directory extra-pkg
-(when (not package-archive-contents)
+(if (not package-archive-contents)
   (package-refresh-contents))
 
 (setq required-packages
@@ -113,7 +114,6 @@
 (load "custom/tramp")
 (load "custom/perl")
 (load "custom/markdown")
-(load "custom/python")
 (load "custom/go")
 
 ;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))

@@ -11,3 +11,5 @@ elpa
 .python-environments
 recentf
 server/server
+ido.last
+ac-comphist.dat

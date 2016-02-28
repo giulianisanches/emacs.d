@@ -58,6 +58,7 @@
         cperl-mode
         projectile
         exec-path-from-shell
+        auto-complete
         markdown-mode
         dash
         paredit
@@ -66,6 +67,7 @@
         web-mode
         yasnippet
         go-mode
+        go-autocomplete
         flx-ido
         color-theme-solarized))
 

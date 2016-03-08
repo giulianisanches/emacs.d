@@ -39,6 +39,20 @@
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; There is a problem using marmalade repository as can be seen here
+; https://github.com/nicferrier/elmarmalade/issues/55
+; Emacs 24.4.1 and gnutls 3.3.8 - Debian Stable
+(if (fboundp 'gnutls-available-p)
+    (fmakunbound 'gnutls-available-p))
+
+(setq tls-program '("gnutls-cli --tofu -p %p %h")
+      imap-ssl-program '("gnutls-cli --tofu -p %p %s")
+      smtpmail-stream-type 'starttls
+      starttls-extra-arguments '("--tofu")
+      )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (require 'package)
 (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
                          ("marmelade" . "http://marmalade-repo.org/packages/")))
@@ -79,9 +93,10 @@
 (load custom-file)
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
-  (add-to-list 'exec-path "/usr/local/bin")
   (require 'exec-path-from-shell)
-  (exec-path-from-shell-initialize))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "GOPATH")
+  (exec-path-from-shell-copy-env "GOROOT"))
 
 (require 'autopair)
 (autopair-global-mode)

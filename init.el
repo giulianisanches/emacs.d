@@ -20,10 +20,6 @@
 (setq default-truncate-lines t)
 (setq truncate-partial-width-windows nil)
 
-(when (eq system-type 'windows-nt)
-  (set-face-attribute 'default nil :font "Consolas-11")
-  (server-start))
-
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
 (setq mac-command-modifier 'meta)
@@ -92,11 +88,24 @@
 (setq custom-file "~/.emacs.d/config/custom/custom.el")
 (load custom-file)
 
+(when (eq system-type 'windows-nt)
+  (set-face-attribute 'default nil :font "Consolas-11")
+  (server-start)
+  (if (not (package-installed-p 'cygwin-mount))
+      (package-install 'cygwin-mount))
+  (custom-set-variables
+   '(cygwin-root-directory "D:/Tools/Cygwin")
+   '(cygwin-mount-cygwin-bin-directory "D:/Tools/Cygwin/bin"))
+  (require 'setup-cygwin))
+
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "GOPATH")
   (exec-path-from-shell-copy-env "GOROOT"))
+
+;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
+;;     (load "erc"))
 
 (require 'autopair)
 (autopair-global-mode)
@@ -132,6 +141,3 @@
 (load "custom/perl")
 (load "custom/markdown")
 (load "custom/go")
-
-;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
-;;     (load "erc"))

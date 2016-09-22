@@ -1,4 +1,4 @@
-(add-to-list 'exec-path "/home/giuliani/dev/go/bin")
+(add-to-list 'exec-path "/home/giuliani/dev/Go/bin")
 
 (defun custom-go-mode-hook ()
   ; Use goimports instead of go-fmt

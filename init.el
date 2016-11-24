@@ -79,7 +79,9 @@
         go-mode
         go-autocomplete
         flx-ido
-        color-theme-solarized))
+        color-theme-solarized
+        zenburn-theme
+        virtualenvwrapper))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))
@@ -141,3 +143,4 @@
 (load "custom/perl")
 (load "custom/markdown")
 (load "custom/go")
+(load "custom/python")

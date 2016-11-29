@@ -36,17 +36,20 @@
 (setq show-paren-delay 0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; There is a problem using marmalade repository as can be seen here
-; https://github.com/nicferrier/elmarmalade/issues/55
-; Emacs 24.4.1 and gnutls 3.3.8 - Debian Stable
-(if (fboundp 'gnutls-available-p)
-    (fmakunbound 'gnutls-available-p))
+;;
+;; There is a problem using marmalade repository as can be seen here
+;; https://github.com/nicferrier/elmarmalade/issues/55
+;; Emacs 24.4.1 and gnutls 3.3.8 - Debian Stable
 
-(setq tls-program '("gnutls-cli --tofu -p %p %h")
-      imap-ssl-program '("gnutls-cli --tofu -p %p %s")
-      smtpmail-stream-type 'starttls
-      starttls-extra-arguments '("--tofu")
-      )
+(when (version< emacs-version "25.0")
+  (if (fboundp 'gnutls-available-p)
+      (fmakunbound 'gnutls-available-p))
+
+  (setq tls-program '("gnutls-cli --tofu -p %p %h")
+	imap-ssl-program '("gnutls-cli --tofu -p %p %s")
+	smtpmail-stream-type 'starttls
+	starttls-extra-arguments '("--tofu")))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'package)

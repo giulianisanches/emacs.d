@@ -3,3 +3,4 @@
 (setq-default tab-stop-list (number-sequence 4 120 4))
 
 (setq c-basic-offset 4)
+(c-set-offset 'case-label '+)

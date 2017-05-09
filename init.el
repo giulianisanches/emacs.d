@@ -82,7 +82,8 @@
         go-mode
         go-autocomplete
         flx-ido
-        zenburn-theme))
+        solarized-theme
+        dracula-theme))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))

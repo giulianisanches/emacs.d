@@ -35,26 +35,9 @@
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; There is a problem using marmalade repository as can be seen here
-;; https://github.com/nicferrier/elmarmalade/issues/55
-;; Emacs 24.4.1 and gnutls 3.3.8 - Debian Stable
-
-(when (version< emacs-version "25.0")
-  (if (fboundp 'gnutls-available-p)
-      (fmakunbound 'gnutls-available-p))
-
-  (setq tls-program '("gnutls-cli --tofu -p %p %h")
-	imap-ssl-program '("gnutls-cli --tofu -p %p %s")
-	smtpmail-stream-type 'starttls
-	starttls-extra-arguments '("--tofu")))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (require 'package)
-(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
-                         ("marmelade" . "http://marmalade-repo.org/packages/")))
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
 (add-to-list 'load-path "~/.emacs.d/config")
@@ -82,7 +65,6 @@
         go-mode
         go-autocomplete
         flx-ido
-        solarized-theme
         dracula-theme))
 
 (dolist (package required-packages)

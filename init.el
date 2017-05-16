@@ -74,24 +74,11 @@
 (setq custom-file "~/.emacs.d/config/custom/custom.el")
 (load custom-file)
 
-(when (eq system-type 'windows-nt)
-  (set-face-attribute 'default nil :font "Consolas-11")
-  (server-start)
-  (if (not (package-installed-p 'cygwin-mount))
-      (package-install 'cygwin-mount))
-  (custom-set-variables
-   '(cygwin-root-directory "D:/Tools/Cygwin")
-   '(cygwin-mount-cygwin-bin-directory "D:/Tools/Cygwin/bin"))
-  (require 'setup-cygwin))
-
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "GOPATH")
-  (exec-path-from-shell-copy-env "GOROOT"))
-
-;; (if (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
-;;     (load "erc"))
+  ;; (load erc)
+  )
 
 (require 'autopair)
 (autopair-global-mode)
@@ -115,6 +102,9 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+
+(when (eq system-type 'windows-nt)
+  (load "custom/windows"))
 
 (load "custom/indentation")
 (load "custom/theme")

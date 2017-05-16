@@ -1,3 +1,6 @@
+(exec-path-from-shell-copy-env "GOPATH")
+(exec-path-from-shell-copy-env "GOROOT")
+
 (add-to-list 'exec-path "/home/giuliani/dev/Go/bin")
 
 (defun custom-go-mode-hook ()

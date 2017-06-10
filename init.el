@@ -62,8 +62,7 @@
         twittering-mode
         web-mode
         yasnippet
-        go-mode
-        go-autocomplete
+        yaml-mode
         flx-ido
         dracula-theme))
 
@@ -116,4 +115,3 @@
 (load "custom/tramp")
 (load "custom/perl")
 (load "custom/markdown")
-(load "custom/go")

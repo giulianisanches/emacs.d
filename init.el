@@ -59,12 +59,11 @@
         dash
         paredit
         pkg-info
-        twittering-mode
         web-mode
         yasnippet
         yaml-mode
         flx-ido
-        dracula-theme))
+        solarized-theme))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))

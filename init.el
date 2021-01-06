@@ -52,18 +52,15 @@
 
 (setq required-packages
       '(s
-        cperl-mode
         projectile
         exec-path-from-shell
         auto-complete
         markdown-mode
         dash
-        paredit
         pkg-info
         web-mode
         yasnippet
         yaml-mode
-        flx-ido
         solarized-theme))
 
 (dolist (package required-packages)
@@ -82,18 +79,11 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-(require 'ido)
-(ido-mode t)
-;; (ido-mode 'buffers)
-;; (setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
-;;                            "*Messages*" "Async Shell Command"))
-
 (require 'uniquify)
 
 (require 'epa-file)
 (epa-file-enable)
 
-(require 'paredit)
 (require 'org)
 
 (put 'downcase-region 'disabled nil)
@@ -108,7 +98,6 @@
 (load "custom/keymap")
 (load "custom/project")
 (load "custom/recentf")
-(load "custom/twitter")
 (load "custom/tramp")
 (load "custom/perl")
 (load "custom/markdown")

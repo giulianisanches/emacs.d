@@ -35,6 +35,8 @@
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 
+(electric-pair-mode 1)
+
 (require 'package)
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
@@ -49,8 +51,7 @@
   (package-refresh-contents))
 
 (setq required-packages
-      '(autopair
-        s
+      '(s
         cperl-mode
         projectile
         exec-path-from-shell
@@ -77,9 +78,6 @@
   (exec-path-from-shell-initialize)
   ;; (load erc)
   )
-
-(require 'autopair)
-(autopair-global-mode)
 
 (require 'yasnippet)
 (yas-global-mode 1)

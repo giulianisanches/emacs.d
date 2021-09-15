@@ -9,16 +9,7 @@
  '(delete-selection-mode nil)
  '(erc-nick-uniquifier "_")
  '(frame-background-mode (quote dark))
- '(package-selected-packages
-   (quote
-    (solarized-theme virtualenvwrapper flx-ido go-autocomplete go-mode yasnippet web-mode paredit dash markdown-mode auto-complete exec-path-from-shell projectile s autopair)))
- '(safe-local-variable-values
-   (quote
-    ((eval when
-           (fboundp
-            (quote rainbow-mode))
-           (rainbow-mode 1)))))
- '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
+  '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

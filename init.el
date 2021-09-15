@@ -39,7 +39,7 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+             '("melpa-stable" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 (add-to-list 'load-path "~/.emacs.d/config")
@@ -52,9 +52,9 @@
 
 (setq required-packages
       '(s
+        magit
         projectile
         exec-path-from-shell
-        auto-complete
         markdown-mode
         dash
         pkg-info

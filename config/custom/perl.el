@@ -1,5 +1,4 @@
 (require 'cperl-mode)
-(require 'pod-mode)
 
 ;; cperl-mode
 (defalias 'perl-mode 'cperl-mode)
@@ -18,12 +17,6 @@
 
 (eval-after-load "cperl-mode"
    '(add-hook 'cperl-mode-hook 'perltidy-mode))
-
-;; pod-mode
-(setq auto-mode-alist
-      (append auto-mode-alist
-              '(("\\.pod$" . pod-mode))))
-(add-hook 'pod-mode-hook 'font-lock-mode)
 
 (add-to-list 'auto-mode-alist '("\\.t$" . cperl-mode))
 

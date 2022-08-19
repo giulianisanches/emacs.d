@@ -6,10 +6,10 @@
 (-each
    (-map
       (lambda (item)
-      (format "~/.emacs.d/elpa/%s" item))
+      (format (concat user-emacs-directory "elpa/%s") item))
    (-filter
       (lambda (item) (s-contains? "theme" item))
-      (directory-files "~/.emacs.d/elpa/")))
+      (directory-files (concat user-emacs-directory "elpa"))))
    (lambda (item)
       (add-to-list 'custom-theme-load-path item)))
 

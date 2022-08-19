@@ -42,8 +42,8 @@
              '("melpa-stable" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(add-to-list 'load-path "~/.emacs.d/config")
-(add-to-list 'load-path "~/.emacs.d/extra")
+(add-to-list 'load-path (concat user-emacs-directory "config"))
+(add-to-list 'load-path (concat user-emacs-directory "extra"))
 
 ;; The code below will install all the extensions that do not exist in the
 ;; directory extra-pkg
@@ -67,7 +67,7 @@
   (if (not (package-installed-p package))
       (package-install package)))
 
-(setq custom-file "~/.emacs.d/config/custom/custom.el")
+(setq custom-file (concat user-emacs-directory "config/custom/custom.el"))
 (load custom-file)
 
 (when (or (eq system-type 'darwin) (eq system-type 'gnu/linux))
@@ -88,9 +88,6 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-
-(when (eq system-type 'windows-nt)
-  (load "custom/windows"))
 
 (load "custom/indentation")
 (load "custom/theme")

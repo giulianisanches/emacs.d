@@ -9,8 +9,9 @@
 
 (setq inhibit-startup-message t)
 
-(setq default-frame-alist
-      '((width . 110) (height . 60)))
+(when window-system (set-frame-size (selected-frame) 110 60))
+;(setq default-frame-alist
+;      '((width . 110) (height . 60)))
 
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)

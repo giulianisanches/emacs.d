@@ -9,9 +9,9 @@
 
 (setq inhibit-startup-message t)
 
-(when window-system (set-frame-size (selected-frame) 110 60))
-;(setq default-frame-alist
-;      '((width . 110) (height . 60)))
+(when window-system (set-frame-size (selected-frame) 110 50))
+
+(add-to-list 'default-frame-alist '(font . "Monaco-14" ))
 
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)

@@ -57,6 +57,7 @@
         projectile
         exec-path-from-shell
         markdown-mode
+        counsel
         dash
         pkg-info
         web-mode
@@ -95,6 +96,7 @@
 (load "custom/hook")
 (load "custom/keymap")
 (load "custom/project")
+(load "custom/ivy")
 (load "custom/recentf")
 (load "custom/tramp")
 (load "custom/perl")

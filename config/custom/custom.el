@@ -4,12 +4,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("d91ef4e714f05fff2070da7ca452980999f5361209e679ee988e3c432df24347" default)))
+   '("d91ef4e714f05fff2070da7ca452980999f5361209e679ee988e3c432df24347" default))
  '(delete-selection-mode nil)
  '(erc-nick-uniquifier "_")
- '(frame-background-mode (quote dark))
-  '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
+ '(frame-background-mode 'dark)
+ '(package-selected-packages
+   '(counsel yasnippet yaml-mode web-mode solarized-theme s projectile pkg-info markdown-mode magit exec-path-from-shell))
+ '(uniquify-buffer-name-style 'forward nil (uniquify)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

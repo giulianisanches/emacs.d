@@ -6,6 +6,6 @@
 ;; Recommended keymap prefix on Windows/Linux
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
-(setq projectile-project-search-path '("~/dev/src/"))
+(setq projectile-project-search-path '(("~/dev/src/" . 3)))
 
 (projectile-mode +1)

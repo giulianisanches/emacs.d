@@ -59,6 +59,7 @@
         markdown-mode
         counsel
         dash
+        ag
         pkg-info
         web-mode
         yasnippet
@@ -91,12 +92,12 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
+(load "custom/ivy")
 (load "custom/indentation")
 (load "custom/theme")
 (load "custom/hook")
 (load "custom/keymap")
 (load "custom/project")
-(load "custom/ivy")
 (load "custom/recentf")
 (load "custom/tramp")
 (load "custom/perl")

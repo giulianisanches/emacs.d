@@ -91,6 +91,9 @@
 
 (require 'org)
 
+;; markdown-mode
+(setq markdown-command "pandoc")
+
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 

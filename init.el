@@ -11,15 +11,13 @@
 
 (when window-system (set-frame-size (selected-frame) 110 50))
 
-(add-to-list 'default-frame-alist '(font . "Monaco-14" ))
+(add-to-list 'default-frame-alist '(font . "Monaco-16" ))
 
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)
 (setq scroll-step 1)
 (setq major-mode 'text-mode)
 (setq kill-whole-line t)
-(setq default-truncate-lines t)
-(setq truncate-partial-width-windows nil)
 
 (setq mac-option-key-is-meta nil)
 (setq mac-command-key-is-meta t)
@@ -90,9 +88,6 @@
 (epa-file-enable)
 
 (require 'org)
-
-;; markdown-mode
-(setq markdown-command "pandoc")
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)

@@ -6,13 +6,21 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+(tooltip-mode -1)
+
+(prefer-coding-system 'utf-8)
+
+(line-number-mode 1)
+(column-number-mode 1)
+
+(show-paren-mode 1)
+
+(electric-pair-mode 1)
+
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 
 (setq inhibit-startup-message t)
-
-(when window-system (set-frame-size (selected-frame) 110 50))
-
-(add-to-list 'default-frame-alist '(font . "Monaco-16" ))
-
 (setq initial-scratch-message nil)
 (setq make-backup-files nil)
 (setq scroll-step 1)
@@ -26,17 +34,13 @@
 
 (setq vc-follow-symlinks nil)
 
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-(prefer-coding-system 'utf-8)
-
-(line-number-mode 1)
-(column-number-mode 1)
-
-(show-paren-mode 1)
 (setq show-paren-delay 0)
 
-(electric-pair-mode 1)
+(when window-system (set-frame-size (selected-frame) 110 50))
+
+(add-to-list 'default-frame-alist '(font . "Monaco-16" ))
+
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (require 'package)
 (add-to-list 'package-archives
@@ -88,9 +92,6 @@
 (epa-file-enable)
 
 (require 'org)
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
 
 (load "custom/ivy")
 (load "custom/indentation")

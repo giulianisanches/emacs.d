@@ -36,9 +36,17 @@
 
 (setq show-paren-delay 0)
 
-(when window-system (set-frame-size (selected-frame) 110 50))
+(setq _default_font
+      (cond ((eq system-type 'windows-nt) "Consolas-16")
+            ((eq system-type 'gnu/linux) "DejaVu Sans Mono-14")
+            ((eq system-type 'darwin) "Monaco-16")
+            (t nil)))
 
-(add-to-list 'default-frame-alist '(font . "Monaco-16" ))
+(when window-system
+  (set-frame-size (selected-frame) 110 50))
+
+(when _default_font
+  (add-to-list 'default-frame-alist `(font . ,_default_font)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 

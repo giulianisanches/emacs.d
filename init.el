@@ -27,16 +27,12 @@
 (setq major-mode 'text-mode)
 (setq kill-whole-line t)
 
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
-
 (setq vc-follow-symlinks nil)
 
 (setq show-paren-delay 0)
 
-(setq _default_font
+(defvar local-default_font)
+(setq local-default_font
       (cond ((eq system-type 'windows-nt) "Consolas-16")
             ((eq system-type 'gnu/linux) "DejaVu Sans Mono-14")
             ((eq system-type 'darwin) "Monaco-16")
@@ -45,8 +41,8 @@
 (when window-system
   (set-frame-size (selected-frame) 110 50))
 
-(when _default_font
-  (add-to-list 'default-frame-alist `(font . ,_default_font)))
+(when local-default_font
+  (add-to-list 'default-frame-alist `(font . ,local-default_font)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -63,6 +59,7 @@
 (if (not package-archive-contents)
   (package-refresh-contents))
 
+(defvar required-packages)
 (setq required-packages
       '(s
         magit
@@ -76,6 +73,7 @@
         web-mode
         yasnippet
         yaml-mode
+        flycheck
         solarized-theme))
 
 (dolist (package required-packages)
@@ -100,6 +98,8 @@
 (epa-file-enable)
 
 (require 'org)
+
+(global-flycheck-mode)
 
 (load "custom/ivy")
 (load "custom/indentation")

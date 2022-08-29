@@ -91,8 +91,7 @@
         yaml-mode
         flycheck
         pyvenv
-        solarized-theme
-        dracula-theme))
+        solarized-theme))
 
 (dolist (package required-packages)
   (if (not (package-installed-p package))

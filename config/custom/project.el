@@ -1,4 +1,11 @@
+;;; project.el --- projectile configuration
+
+;;; Commentary:
+
+;;; Code:
+
 (require 'projectile)
+(require 'f)
 
 ;; Recommended keymap prefix on macOS
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
@@ -17,7 +24,9 @@
      (let ((venv-path (f-expand ".venv" path)))
        (if (f-exists? venv-path)
            (progn
-             (pyvenv-workon venv-path))
+             (pyvenv-activate venv-path))
              t)))))
 
 (add-hook 'projectile-after-switch-project-hook #'pyvenv-autoload)
+
+;;; project.el ends here

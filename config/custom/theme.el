@@ -13,4 +13,4 @@
    (lambda (item)
       (add-to-list 'custom-theme-load-path item)))
 
-(load-theme 'solarized-dark t)
+(load-theme 'dracula t)

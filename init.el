@@ -86,6 +86,7 @@
         markdown-mode
         counsel
         web-mode
+        go-mode
         yasnippet
         yaml-mode
         flycheck

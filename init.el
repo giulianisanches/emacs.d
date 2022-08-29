@@ -74,6 +74,7 @@
         yasnippet
         yaml-mode
         flycheck
+        pyvenv
         solarized-theme))
 
 (dolist (package required-packages)

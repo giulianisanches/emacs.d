@@ -31,18 +31,26 @@
 
 (setq show-paren-delay 0)
 
-(defvar local-default_font)
-(setq local-default_font
+(defvar local-default-font)
+
+(setq local-default-font
       (cond ((eq system-type 'windows-nt) "Consolas-16")
             ((eq system-type 'gnu/linux) "DejaVu Sans Mono-14")
-            ((eq system-type 'darwin) "Monaco-16")
             (t nil)))
+
+(when (eq system-type 'darwin)
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier 'super)
+  (setq local-default-font "Monaco-16")
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark)))
 
 (when window-system
   (set-frame-size (selected-frame) 110 50))
 
-(when local-default_font
-  (add-to-list 'default-frame-alist `(font . ,local-default_font)))
+(when local-default-font
+  (add-to-list 'default-frame-alist `(font . ,local-default-font))
+  (add-to-list 'initial-frame-alist `(font . ,local-default-font)))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -61,16 +69,16 @@
 
 (defvar required-packages)
 (setq required-packages
-      '(s
+      '(dash
+        s
         f
+        ag
+        exec-path-from-shell
+        pkg-info
         magit
         projectile
-        exec-path-from-shell
         markdown-mode
         counsel
-        dash
-        ag
-        pkg-info
         web-mode
         yasnippet
         yaml-mode

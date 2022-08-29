@@ -1,7 +1,13 @@
+;;; init.el --- Emacs configuration
+
+;;; Commentary:
+
 ;; Thanks to:
-;; Ryan McGuire emacs cofiguration bundle: http://github.com/EnigmaCurry/emacs
+;; Ryan McGuire Emacs cofiguration bundle: http://github.com/EnigmaCurry/emacs
 ;; Chris Wanstrath http://github.com/defunkt/emacs
 ;; Eden Cardim (http://edencardim.com)
+
+;;; Code:
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -122,3 +128,5 @@
 (load "custom/perl")
 (load "custom/markdown")
 (load "custom/hook")
+
+;;; init.el ends here

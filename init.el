@@ -62,6 +62,7 @@
 (defvar required-packages)
 (setq required-packages
       '(s
+        f
         magit
         projectile
         exec-path-from-shell

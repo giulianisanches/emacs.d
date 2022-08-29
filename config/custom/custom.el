@@ -9,7 +9,7 @@
  '(erc-nick-uniquifier "_")
  '(frame-background-mode 'dark)
  '(package-selected-packages
-   '(pyvenv flycheck counsel yasnippet yaml-mode web-mode solarized-theme s projectile pkg-info markdown-mode magit exec-path-from-shell))
+   '(f pyvenv flycheck counsel yasnippet yaml-mode web-mode solarized-theme s projectile pkg-info markdown-mode magit exec-path-from-shell))
  '(uniquify-buffer-name-style 'forward nil (uniquify)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

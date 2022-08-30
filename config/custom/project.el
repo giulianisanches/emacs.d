@@ -6,6 +6,7 @@
 
 (require 'projectile)
 (require 'f)
+;;(require 'python)
 
 ;; Recommended keymap prefix on macOS
 (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
@@ -16,7 +17,7 @@
 
 (projectile-mode +1)
 
-(defun pyvenv-autoload ()
+(defun python-venv-autoload ()
   "Automatically activates pyvenv version if .venv directory exists."
   (f-traverse-upwards
    (lambda (path)
@@ -24,8 +25,9 @@
        (if (f-exists? venv-path)
            (progn
              (pyvenv-activate venv-path))
+             ;;(setq python-shell-virtualenv-root venv-path))
              t)))))
 
-(add-hook 'projectile-after-switch-project-hook #'pyvenv-autoload)
+(add-hook 'projectile-after-switch-project-hook #'python-venv-autoload)
 
 ;;; project.el ends here

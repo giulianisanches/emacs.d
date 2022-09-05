@@ -50,7 +50,7 @@
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier 'super)
-  (setq local-default-font "Monaco-16")
+  (setq local-default-font "Monaco-18")
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (add-to-list 'default-frame-alist '(ns-appearance . dark)))
 
@@ -94,6 +94,7 @@
         yaml-mode
         json-mode
         flycheck
+        lsp-mode
         pyvenv
         solarized-theme))
 

@@ -95,6 +95,7 @@
         json-mode
         flycheck
         lsp-mode
+        lsp-pyright
         pyvenv
         solarized-theme))
 

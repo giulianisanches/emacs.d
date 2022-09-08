@@ -11,6 +11,4 @@
 (setq markdown-command "pandoc")
 (setq markdown-asymmetric-header t)
 
-(add-hook 'markdown-mode-hook (lambda () (setq truncate-lines t)))
-
 ;;; markdown.el ends here

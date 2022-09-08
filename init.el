@@ -12,6 +12,9 @@
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
 
+(set-default 'truncate-partial-width-windows nil)
+(set-default 'truncate-lines t)
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -95,6 +98,7 @@
         json-mode
         flycheck
         lsp-mode
+        lsp-ui
         lsp-pyright
         pyvenv
         solarized-theme))

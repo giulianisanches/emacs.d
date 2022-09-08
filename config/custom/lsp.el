@@ -5,6 +5,7 @@
 ;;; Code:
 
 (require 'lsp)
+(require 'lsp-ui)
 
 (setq lsp-ui-doc-show-with-cursor nil)
 (setq lsp-ui-sideline-enable nil)
